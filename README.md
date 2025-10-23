@@ -42,32 +42,32 @@ The project has two forms:
 
 **If using python venv, run:**
 
-```
+```shell
 python -m venv `<your_venv_name>`
 ```
 
 *Bash/Zsh Activation*
 
-```
+```shell
 #bash/zsh
 source <your_venv_name>/bin/activate 
 ```
 
 *Windows Activation*
 
-```
+```shell
 <your_venv_name>\Scripts\activate.bat
 ```
 
 **If using conda, run:**
 
-```
+```shell
 conda create --name your_env_name python=3.9
 conda activate your_env_name
 ```
 *cloning the repository:*
 
-```
+```shell
 git clone https://github.com/bglid/ANC-adaptive-filters.git
 ```
 
@@ -122,7 +122,7 @@ make pre-commit-install
 
 To easily run the filter evaluation bash script, run the script from root, passing the filter algorithm you wish to evaluate. The available algorithms are ```["LMS", "NLMS", "RLS", "APA", "FDLMS", "FDNLMS"]``` *(Case sensitive)*. 
 
-```
+```shell
 # To give permission, if needed
 chmod +x ./scripts/run_eval.sh
 
@@ -142,7 +142,7 @@ filter-order = 32
 **Changing filter parameters**
 
  - To change any filter params, such as mu, or to run other algorithms or other tests, pass extra flags in upon calling the script. To see a full list, pass ```-h```. You will need to pass an algorithm before ```-h``` to see the possible flags.
- ```
+ ```shell
  # Example running another script, adjusting eval params
 ./scripts/run_eval.sh APA --block_size=3 --mu=0.005 --ale=True --ale_delay=24
 
@@ -161,7 +161,7 @@ Block-size = 3
 
  - - - 
  ## How to use: Filters
-```
+```python
 from adaptive_filter.algorithms.nlms import NLMS 
 
 # setting up filter
