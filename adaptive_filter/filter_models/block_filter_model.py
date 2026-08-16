@@ -10,7 +10,6 @@ import numpy as np
 from numpy.typing import NDArray
 
 from adaptive_filter.utils.metrics import EvaluationSuite
-from adaptive_filter.utils.stft import STFT
 
 
 # SIMILAR to FilterModel, but with block-based processing logic added
@@ -232,7 +231,6 @@ class FrequencyDomainAF(BlockFilterModel):
         self.half_bins = self.block_size // 2 + 1
         self.eps = 1e-8
         self.algorithm = "FDAF"
-        self.stft = STFT(window_length=block_size)
         self.W = np.zeros(self.half_bins, dtype=np.complex128)
 
     # Setting the update step to include conj
