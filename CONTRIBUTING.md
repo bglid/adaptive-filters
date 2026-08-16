@@ -1,47 +1,104 @@
 # How to contribute
 
+### READ BELOW
+
+---
+
+#### If a PR is submitted with no issue attached and a green light on working on a PR, it will be generally closed. Undisclosed AI PRs will be **closed** automatically
+
+#### **Overall, submit an issue instead.**
+
+---
+
 ## Dependencies
 
-We use `poetry` to manage the [dependencies](https://github.com/python-poetry/poetry).
-If you dont have `poetry`, you should install with `make poetry-download`.
-
-To install dependencies and prepare [`pre-commit`](https://pre-commit.com/) hooks you would need to run `install` command:
+We use `uv` to manage Python dependencies and the dev env.
+If you dont have `uv`, please install that first then install the project and dev dependencies:
 
 ```bash
-make install
-make pre-commit-install
+uv sync
 ```
 
-To activate your `virtualenv` run `poetry shell`.
+Install [`pre-commit`](https://pre-commit.com/) hooks:
+
+```bash
+uv run pre-commit install
+```
+
+`uv` automatically manages the project virtual environment in `.venv`. Manually activating it is unnecessary. Run project tools with `uv run`.
 
 ## Codestyle
 
-After installation you may execute code formatting.
+Format the code with:
 
 ```bash
-make codestyle
+uv run isort . 
+uv run black .
+```
+
+Apply Python syntax upgrades with:
+
+```bash
+uv run pyupgrade --py310-plus **/*.py
 ```
 
 ### Checks
 
-Many checks are configured for this project. Command `make check-codestyle` will check black, isort and darglint.
-The `make check-safety` command will look at the security of your code.
+To run the test suite:
 
-Comand `make lint` applies all checks.
+```bash
+uv run pytest
+```
+
+To run the mypy type checking:
+
+```bash
+uv run mypy .
+```
+
+To run the style checking:
+
+```bash
+uv run isort --diff --check-only . 
+uv run black --diff --check . 
+uv run darglint --verbosity 2 adaptive_filter tests  # this'll run on the tests too
+```
+
+To run the security checks:
+
+```bash
+uv run safety check --full-report --policy-file=safety-policy.yml 
+uv run bandit -ll --recursive adaptive_filter tests
+```
+
+To run the pre-commit hooks:
+
+```bash
+uv run pre-commit run --all-files
+```
 
 ### Before submitting
 
+**Again, READ the section at the [top](#if-a-pr-is-submitted-with-no-issue-attached-and-a-green-light-on-working-on-a-pr-it-will-be-generally-closed-ai-prs-will-be-closed-automatically)**
+
 Before submitting your code please do the following steps:
 
-1. Add any changes you want
-1. Add tests for the new changes
-1. Edit documentation if you have changed something significant
-1. Run `make codestyle` to format your changes.
-1. Run `make lint` to ensure that types, security and docstrings are okay.
+1. Add tests for new changes
+     - *Update documentation for significant changes.*
+2. Format your changes with isort and black
+3. Run uv run pytest
+4. Run uv run mypy .
+5. Run uv run pre-commit run --all-files
+6. Commit any changes to uv.lock if you modified project dependencies
 
 ## Other help
 
 You can contribute by spreading a word about this library.
-It would also be a huge contribution to write
-a short article on how you are using this project.
 You can also share your best practices with us.
+
+- - - 
+**In particular**, if you use this in any DSP research, please let us know!! 
+1. Because we love the topic and would love to check out and share your research
+2. It gives us an opportunity to see how this library is being used and how it can be improved.
+
+- - - 
