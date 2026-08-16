@@ -1,71 +1,67 @@
-# Poetry pyproject.toml: https://python-poetry.org/docs/pyproject/
 [build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ['hatchling', 'hatch-fancy-pypi-readme>=22.5.0']
+build-backend = 'hatchling.build'
 
-[tool.poetry]
+[project]
 name = "adaptive_filter"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python implementation of DSP adaptive filters"
 readme = "README.md"
-authors = ["bglid <benjamin.h.glidden@gmail.com>"]
-license = "MIT"
-repository = "https://github.com/bglid/adaptive_filter"
-homepage = "https://github.com/bglid/adaptive_filter"
-
-# Keywords description https://python-poetry.org/docs/pyproject/#keywords
-keywords = []  #! Update me
-
-# Pypi classifiers: https://pypi.org/classifiers/
-classifiers = [  #! Update me
+authors = [
+    { name = "bglid", email = "benjamin.h.glidden@gmail.com" }
+]
+license="MIT OR Apache-2.0"
+license-files = ["LICENSE-APACHE", "LICENSE-MIT"]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.21.0,<2.0.0",
+    "matplotlib>=3.9.0,<4.0.0",
+    "scikit-learn==1.6.1",
+    "librosa==0.11.0",
+    "soundfile==0.13.1",
+]
+classifiers = [  
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 
+[project.urls]
+Homepage = "https://github.com/bglid/ANC-adaptive-filters"
+Repository = "https://github.com/bglid/ANC-adaptive-filters"
 
 
-[tool.poetry.dependencies]
-python = ">=3.9.2,<4.0"
-
-[tool.poetry.group.dev.dependencies]
-bandit = "^1.7.1"
-black = "^25.1.0"
-darglint = "^1.8.1"
-isort = {extras = ["colors"], version = "^5.10.1"}
-mypy = "1.14.0"
-mypy-extensions = "^1.0.0"
-pre-commit = "^4.0.1"
-pydocstyle = "^6.1.1"
-pylint = "^3.3.7"
-pytest = "^8.3.4"
-pyupgrade = "^3.19.1"
-safety = ">=2.2.0"
-coverage = "^7.6.9"
-coverage-badge = "^1.1.0"
-pytest-html = "^3.1.1"
-pytest-cov = "^6.0.0"
-numpy = "^1.21.0"
-matplotlib = "^3.9.0"
-scikit-learn = "1.6.1"
-librosa = "0.11.0"
-soundfile = "0.13.1"
-cryptography = "44.0.1"
-setuptools = "78.1.1"
-h11 = "0.16.0"
-urllib3 = "2.5.0"
-requests = "2.32.5"
+[dependency-groups]
+dev = [
+    "isort[colors]>=5.10.1,<6.0.0",
+    "bandit>=1.7.1,<2.0.0",
+    "black>=26.3.1",
+    "darglint>=1.8.1,<2.0.0",
+    "mypy>=1.14.0",
+    "mypy-extensions>=1.0.0,<2.0.0",
+    "pre-commit>=4.0.1,<5.0.0",
+    "pydocstyle>=6.1.1,<7.0.0",
+    "pylint>=3.3.7,<4.0.0",
+    "pytest>=9.1.1",
+    "pyupgrade>=3.19.1,<4.0.0",
+    "safety>=2.2.0",
+    "coverage>=7.6.9,<8.0.0",
+    "coverage-badge>=1.1.0,<2.0.0",
+    "pytest-html>=3.1.1,<4.0.0",
+    "pytest-cov>=6.0.0,<7.0.0",
+]
 
 
 
 
 [tool.black]
 # https://github.com/psf/black
-target-version = ["py39"]
+target-version = ["py310"]
 line-length = 88
 color = true
 
@@ -87,7 +83,7 @@ exclude = '''
 
 [tool.isort]
 # https://github.com/timothycrosley/isort/
-py_version = 39
+py_version = 310
 line_length = 88
 
 known_typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
@@ -100,7 +96,7 @@ color_output = true
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
-python_version = 3.9
+python_version = "3.10"
 pretty = true
 show_traceback = true
 color_output = true
@@ -140,14 +136,12 @@ addopts = [
 ]
 
 [tool.coverage.run]
-source = ["tests"]
-
-[coverage.paths]
-source = "adaptive_filter"
-
-[coverage.run]
+source = ["adaptive_filter"]
 branch = true
 
-[coverage.report]
+[tool.coverage.paths]
+source = ["adaptive_filter"]
+
+[tool.coverage.report]
 fail_under = 50
 show_missing = true

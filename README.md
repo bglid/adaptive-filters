@@ -1,166 +1,72 @@
-# Python Implementation of DSP Adaptive Filters
+# Adaptive Filters
 
-<div align="center">
-
-[![Python Version](https://img.shields.io/pypi/pyversions/adaptive_filter.svg)](https://pypi.org/project/adaptive_filter/)
-[![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/bglid/adaptive_filter/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
+[![Actions status](https://github.com/bglid/adaptive-filters/workflows/build/badge.svg)](https://github.com/bglid/adaptive-filters/actions)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/bglid/adaptive_filter/blob/master/.pre-commit-config.yaml)
-[![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/bglid/adaptive_filter/releases)
-[![License](https://img.shields.io/github/license/bglid/adaptive_filter)](https://github.com/bglid/adaptive_filter/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/bglid/adaptive-filters)](https://github.com/bglid/adaptive-filters/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
+####  Python adaptive filtering DSP algorithms package that uses pyo3 for fast processing.
 
+---
+*Project is still WIP. Going through massive refactor to Rust [pyo3](https://github.com/pyo3/pyo3) internals*
+- - - 
 
-</div>
+## Filters:
 
-## LMS, RLS, NLMS, APA, and Frequency Domain Adaptive filters for Adaptive Noise Cancelling.
+This project contains Python implementations of Adaptive filtering algorithms, currently including:
 
-* ###### Python implementation used as a proof of concept to benchmark performance of different filter algorithms on noisy speech. Created as a final project for a masters course in DSP. Part of a project to implement [embedded adaptive filters using C++ and Bela](https://github.com/bglid/Bela-NLMS-ANC#).
+| Adaptive Filter Algorithm                               | Status |
+| ------------------------------------------------------- | :----: |
+| Least Mean Squares (LMS)                                |   ✔    |
+| Normalized Least Mean Squares (NLMS)                    |   ✔    |
+| Recursive Least Squares (RLS)                           |   ✔    |
+| Affine Projection Algorithm (APA)                       |   ✔    |
+| Frequency Domain Adaptive Filters                       |*in progress*|
 
-* ###### *Note* - The frequency domain filters need some work. Currently their performance is not adequate for legit use-cases. 
+> [!NOTE]
+> The frequency-domain implementations are still experimental and currently require further work before being appropriate for practical use.
+---
 
- - - - 
- ## Project Background:
-Adaptive Noise Cancellation (ANC) is a research topic that focuses on removing unwanted noise sources from a signal to recover the desired signal in a “less-noisy” form. An area that can be applied to the task of ANC is Adaptive Filters.
+## Installation
 
-The goal of this project was to deepend knowledge of adaptive filters and related DSP topics through implementing various adaptive filter algorithms. In particular, seeing how well they can work with speech, and how well they can work in various settings, such as when needing to rely on ALE because no noise reference is available.
+The projects currently supports python 3.10 - 3.13. The project uses `uv` for dependency and environment management.
 
-Additionally, out of my own personal interests, I wanted to work on a DSP topic that could be levereged into becoming an embedded project using C++ as well. 
-
-The project has two forms: 
- - *Running the evaluation script* - runs a chosen algorithm over a various noise types, which can be found in the ```data/``` directory of this project. The data itself exists in the ```data/evaluation_data/``` directory, and can be adjusted if you wish to run the evaluation script on your own data, to test how an adaptive filter may perform across larger chunks of data - Just swap out the .wav files for your files! The evaluation script when executed will return a list of performance metrics, and is ideally run from the terminal. For more info, see the *"How to use: Evaluation Script"* listed below.
-
-  - *Using the filters as a tool in your own python script*. The filters are designed to be imported and used as any other module. Considering packaging them is currently under review and a work in progress. However, if you wish to use them, feel free to clone this repo, or ```filter_model.py```, which contains the class definition for normal AFs, as well as the algorithm of your choosing. For an example of these filters in action, see the *"How to use: Filters"* below 
-
- - - - 
- ## Setup
-
-*Note, requires python 3.9 or greater*
-
-**If using python venv, run:**
-
-```shell
-python -m venv `<your_venv_name>`
-```
-
-*Bash/Zsh Activation*
-
-```shell
-#bash/zsh
-source <your_venv_name>/bin/activate 
-```
-
-*Windows Activation*
-
-```shell
-<your_venv_name>\Scripts\activate.bat
-```
-
-**If using conda, run:**
-
-```shell
-conda create --name your_env_name python=3.9
-conda activate your_env_name
-```
-*cloning the repository:*
-
-```shell
-git clone https://github.com/bglid/ANC-adaptive-filters.git
-```
-
-**Installing Dependencies:**
-
- - *Note* - this project uses poetry. For easiest install, it's recommended to install following the instructions below using the [`Makefile`](https://github.com/bglid/adaptive_filter/blob/master/Makefile) commands. For more information on the available commands, see the ```docs/``` directory.
-
- 
-[`Makefile`](https://github.com/bglid/adaptive_filter/blob/master/Makefile) commands for install:
-
-<details>
-<summary>1. Download and remove Poetry</summary>
-<p>
-
-To download and install Poetry run:
-
+Cloning the repo: 
 ```bash
-make poetry-download
+git clone https://github.com/bglid/adaptive-filters.git
 ```
 
-To uninstall
-
+Install the project dev dependencies 
 ```bash
-make poetry-remove
+uv sync
 ```
 
-</p>
-</details>
-
-<details>
-<summary>2. Install all dependencies and pre-commit hooks</summary>
-<p>
-
-Install requirements:
-
+You can then run commands in the project environment with this format:
 ```bash
-make install
+uv run <command>
+
+# example:
+uv run pytest
 ```
 
-Pre-commit hooks could be installed after `git init` via
+####  Contributing
 
-```bash
-make pre-commit-install
-```
-</p>
-</details>
+See [CONTRIBUTING.md](https://github.com/bglid/adaptive-filters/blob/main/CONTRIBUTING.md) for setup and contribution guidelines. 
 
- - - -
- ## How to use: Evalulation Script
+In short,
+  - Open an issue for a discussion. We will likely handle it.
+  - Undisclosed AI PRs will be closed and no further PRs from said user will be considered.
 
-**Running the Filter Evaluation**
 
-To easily run the filter evaluation bash script, run the script from root, passing the filter algorithm you wish to evaluate. The available algorithms are ```["LMS", "NLMS", "RLS", "APA", "FDLMS", "FDNLMS"]``` *(Case sensitive)*. 
+---
 
-```shell
-# To give permission, if needed
-chmod +x ./scripts/run_eval.sh
+## Usage
 
-# Basic example of running the eval script:
-./scripts/run_eval.sh LMS
+Filters can be imported from the `adaptive_filter` package.
 
-# which should output from the terminal:
------Starting testing on air_conditioner with the LMS algorithm-----
-Algorithm:      LMS
----------------------
-params:
-mu = 0.001
-filter-order = 32
----------------------
-...
-```
-**Changing filter parameters**
-
- - To change any filter params, such as mu, or to run other algorithms or other tests, pass extra flags in upon calling the script. To see a full list, pass ```-h```. You will need to pass an algorithm before ```-h``` to see the possible flags.
- ```shell
- # Example running another script, adjusting eval params
-./scripts/run_eval.sh APA --block_size=3 --mu=0.005 --ale=True --ale_delay=24
-
-# Which outputs at the terminal:
------Starting testing on air_conditioner with the APA algorithm-----
-Block-based Algorithm:  APA
----------------------
-params:
-mu = 0.005
-filter-order = 32
-Block-size = 3
----------------------
-...
- 
- ```
-
- - - - 
- ## How to use: Filters
+NLMS adaptive filter example:
 ```python
 from adaptive_filter.algorithms.nlms import NLMS 
 
@@ -174,33 +80,23 @@ error, noise_estimate = nlms_af.filter(
 )
 ```
 
- - - -
-## 🛡 License
+Here: 
+- `d` is the desired/noisy signal.
+- `x` is the reference noise signal.
+- `clean_signal` is optional for purely evaluating filter performance.
+
+---
 
 
-This project is licensed under the terms of the `MIT` license. See [LICENSE](https://github.com/bglid/adaptive_filter/blob/master/LICENSE) for more details.
- - - -
+## Credits 
 
-## Credits [![🚀 Your next Python package needs a bleeding-edge project structure.](https://img.shields.io/badge/python--package--template-%F0%9F%9A%80-brightgreen)](https://github.com/TezRomacH/python-package-template)
-
-This project was generated with [`python-package-template`](https://github.com/TezRomacH/python-package-template)
+Organization and project originally inspired by [``Padasip``](https://github.com/matousc89/padasip)
 
 
-Library organization inspired and referenced from ``Padasip``
+## Citation
 
-The MS-SNSD Dataset was used for evaluating filter algorithm performance:
-```bibtext
-@article{reddy2019scalable,
-  title={A Scalable Noisy Speech Dataset and Online Subjective Test Framework},
-  author={Reddy, Chandan KA and Beyrami, Ebrahim and Pool, Jamie and Cutler, Ross and Srinivasan, Sriram and Gehrke, Johannes},
-  journal={Proc. Interspeech 2019},
-  pages={1816--1820},
-  year={2019}
-}
-```
+HeIf you found any of this helpful, feel free to cite it, or just send us an email.
 
-## 📃 Citation
-Hey! If you found any of this helpful, feel free to cite it, or just send me a message.
 ```bibtex
 @misc{adaptive_filter,
   author = {bglid},
@@ -211,3 +107,4 @@ Hey! If you found any of this helpful, feel free to cite it, or just send me a m
   howpublished = {\url{https://github.com/bglid/adaptive_filter}}
 }
 ```
+- - -
