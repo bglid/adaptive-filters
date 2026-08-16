@@ -1,6 +1,3 @@
-
-<div align="center">
-
 # Adaptive Filters
 
 [![Actions status](https://github.com/bglid/adaptive-filters/workflows/build/badge.svg)](https://github.com/bglid/adaptive-filters/actions)
@@ -10,7 +7,7 @@
 [![License](https://img.shields.io/github/license/bglid/adaptive-filters)](https://github.com/bglid/adaptive-filters/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-#####  Python adaptive filtering DSP algorithms package that uses pyo3 for fast processing.
+####  Python adaptive filtering DSP algorithms package that uses pyo3 for fast processing.
 
 ---
 *Project is still WIP. Going through massive refactor to Rust [pyo3](https://github.com/pyo3/pyo3) internals*
@@ -93,7 +90,7 @@ Here:
 
 ## Credits 
 
-Library organization originally inspired by ``Padasip``
+Organization and project originally inspired by [``Padasip``](https://github.com/matousc89/padasip)
 
 
 ## Citation
