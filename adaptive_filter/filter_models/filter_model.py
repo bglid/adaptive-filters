@@ -113,4 +113,4 @@ class FilterModel:
             # updating the weights
             self.W += self.update_step(e_n=error[sample], x_n=circ_buffer)
 
-        return noise_estimate
+        return error

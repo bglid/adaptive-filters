@@ -141,7 +141,7 @@ class BlockFilterModel:
                     e_block = np.array(error_buffer)
                     self.W += self.update_step(e_n=e_block, x_n=x_block)
 
-        return noise_estimate
+        return error
 
 
 # for frequency domain block based processing
@@ -283,4 +283,4 @@ class FrequencyDomainAF(BlockFilterModel):
                 )
                 self.H += self.update_step(e_f, x_f)
 
-        return noise_estimate
+        return error
