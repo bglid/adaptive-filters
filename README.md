@@ -71,19 +71,15 @@ NLMS adaptive filter example:
 from adaptive_filter.algorithms.nlms import NLMS 
 
 # setting up filter
-mu = 0.001
-nlms_af = NLMS(mu=mu, n=32)
+nlms_af = NLMS(mu=0.001, n=32)
 
 # Assuming signals are already present and named accordingly 
-error, noise_estimate = nlms_af.filter(
-    d=noisy_signal, x=noise, eval_at_sample=1000, clean_signal=clean_signal, return_metrics=False
-)
+cleaned_signal = nlms_af.filter(d=noisy_signal, x=noise)
 ```
 
 Here: 
 - `d` is the desired/noisy signal.
 - `x` is the reference noise signal.
-- `clean_signal` is optional for purely evaluating filter performance.
 
 ---
 
@@ -95,7 +91,7 @@ Organization and project originally inspired by [``Padasip``](https://github.com
 
 ## Citation
 
-HeIf you found any of this helpful, feel free to cite it, or just send us an email.
+If you found any of this helpful, feel free to cite it, or just send us an email.
 
 ```bibtex
 @misc{adaptive_filter,
