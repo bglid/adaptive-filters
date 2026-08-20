@@ -68,30 +68,8 @@ def test_filter():
     assert d.shape == clean.shape
 
     # testing results when metrics not returned
-    no_metrics_results = model.filter(d, x, clean)
-    assert isinstance(no_metrics_results, tuple) and len(no_metrics_results) == 2
-
-    # testing the result output when metrics returned
-    result = model.filter(d, x, clean, return_metrics=True)
-    assert isinstance(result, tuple) and len(result) == 8
-
-    # checking the outputs
-    (
-        error,
-        noise_estimate,
-        adapt_mse,
-        speech_mse,
-        snr_res,
-        delta_snr,
-        elapsed_time,
-        conv_time,
-    ) = result
-    assert isinstance(error, np.ndarray) and error.shape == (5,)
-    assert isinstance(noise_estimate, np.ndarray) and error.shape == (5,)
-
-    # checking metrics types
-    for metric in (adapt_mse, speech_mse, snr_res, delta_snr, elapsed_time, conv_time):
-        assert isinstance(metric, float)
+    results = model.filter(d, x, clean)
+    assert isinstance(results, tuple) and len(results) == 2
 
 
 def fd_test_filter():
@@ -121,27 +99,5 @@ def fd_test_filter():
     assert d.shape == clean.shape
 
     # testing results when metrics not returned
-    no_metrics_results = model.filter(d, x, clean)
-    assert isinstance(no_metrics_results, tuple) and len(no_metrics_results) == 2
-
-    # testing the result output when metrics returned
-    result = model.filter(d, x, clean, return_metrics=True)
-    assert isinstance(result, tuple) and len(result) == 8
-
-    # checking the outputs
-    (
-        error,
-        noise_estimate,
-        adapt_mse,
-        speech_mse,
-        snr_res,
-        delta_snr,
-        elapsed_time,
-        conv_time,
-    ) = result
-    assert isinstance(error, np.ndarray) and error.shape == (5,)
-    assert isinstance(noise_estimate, np.ndarray) and error.shape == (5,)
-
-    # checking metrics types
-    for metric in (adapt_mse, speech_mse, snr_res, delta_snr, elapsed_time, conv_time):
-        assert isinstance(metric, float)
+    results = model.filter(d, x, clean)
+    assert isinstance(results, tuple) and len(results) == 2

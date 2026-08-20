@@ -6,8 +6,6 @@ import time
 import numpy as np
 from numpy.typing import NDArray
 
-from adaptive_filter.utils.metrics import EvaluationSuite
-
 
 class FilterModel:
     def __init__(self, mu: float, filter_order: int) -> None:
@@ -114,9 +112,6 @@ class FilterModel:
         # getting the number of samples from x len
         num_samples = len(x)
 
-        # creating evaluation object
-        evaluation_runner = EvaluationSuite(algorithm=self.algorithm)
-
         # initializing the arrays to hold error and noise estimate
         noise_estimate = np.zeros(num_samples)
         error = np.zeros(num_samples)
@@ -124,8 +119,6 @@ class FilterModel:
         # creating a ciruclar buffer for the filter taps
         circ_buffer = np.zeros(self.N, dtype=float)
 
-        # clock-time for how long filtering this signal takes
-        start_time = time.perf_counter()
         for sample in range(num_samples):
             # using a circular buffer style window technique:
             circ_buffer = np.roll(circ_buffer, 1)
@@ -143,42 +136,4 @@ class FilterModel:
             self.W += self.update_step(e_n=error[sample], x_n=circ_buffer)
 
         # Only returning signals if metrics is false
-        if return_metrics is False:
-            return error, noise_estimate
-
-        # taking clock-time before running metrics
-        elapsed_time = time.perf_counter() - start_time
-
-        # to avoid memory issues, need to ensure signals are same shape
-        d_flat, y_flat, clean_flat, error_flat = evaluation_runner.signal_reshaper(
-            d, noise_estimate, clean_signal, error
-        )
-
-        # What algo minimized
-        adaption_mse_result = evaluation_runner.MSE(d_flat, y_flat)
-        # How close e[n] is to s[n]
-        speech_mse_result = evaluation_runner.MSE(clean_flat, error_flat)
-        # full SNR
-        snr_result = evaluation_runner.SNR(clean_flat, error_flat)
-        # # getting the Delta SNR
-        snr_in = evaluation_runner.SNR(clean_flat, d_flat)  # SNR without filtering
-        delta_snr = snr_result - snr_in
-        # getting convergence time
-        convergence_time = evaluation_runner.convergence_time(
-            error=error_flat,
-            fs=16000,
-            samples_steady=300,
-            r_tol=0.05,
-            consecutive_samples=5,
-        )
-
-        return (
-            error,
-            noise_estimate,
-            adaption_mse_result,
-            speech_mse_result,
-            snr_result,
-            delta_snr,
-            elapsed_time,
-            convergence_time,
-        )
+        return error, noise_estimate

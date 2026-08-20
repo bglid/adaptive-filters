@@ -9,8 +9,6 @@ import numpy as np
 # from numpy.core.shape_base import block
 from numpy.typing import NDArray
 
-from adaptive_filter.utils.metrics import EvaluationSuite
-
 
 # SIMILAR to FilterModel, but with block-based processing logic added
 class BlockFilterModel:
@@ -76,7 +74,6 @@ class BlockFilterModel:
         d: NDArray[np.float64],
         x: NDArray[np.float64],
         clean_signal: NDArray[np.float64],
-        return_metrics=False,
     ) -> tuple:
         """Iterates Adaptive filter alorithm and updates for length of input signal X
 
@@ -132,9 +129,6 @@ class BlockFilterModel:
         # getting the number of samples from x len
         num_samples = len(x)
 
-        # creating evaluation object
-        evaluation_runner = EvaluationSuite(algorithm=self.algorithm)
-
         # initializing the arrays to hold error and noise estimate
         noise_estimate = np.zeros(num_samples)
         error = np.zeros(num_samples)
@@ -145,8 +139,6 @@ class BlockFilterModel:
         x_buffer = deque(maxlen=self.block_size)
         error_buffer = deque(maxlen=self.block_size)
 
-        # clock-time for how long filtering this signal takes
-        start_time = time.perf_counter()
         for sample in range(num_samples):
             # using a circular buffer style window technique:
             circ_buffer = np.roll(circ_buffer, 1)
@@ -171,45 +163,7 @@ class BlockFilterModel:
                     self.W += self.update_step(e_n=e_block, x_n=x_block)
 
         # Only returning signals if metrics is false
-        if return_metrics is False:
-            return error, noise_estimate
-
-        # taking clock-time before running metrics
-        elapsed_time = time.perf_counter() - start_time
-
-        # to avoid memory issues, need to ensure signals are same shape
-        d_flat, y_flat, clean_flat, error_flat = evaluation_runner.signal_reshaper(
-            d, noise_estimate, clean_signal, error
-        )
-
-        # What algo minimized
-        adaption_mse_result = evaluation_runner.MSE(d_flat, y_flat)
-        # How close e[n] is to s[n]
-        speech_mse_result = evaluation_runner.MSE(clean_flat, error_flat)
-        # full SNR
-        snr_result = evaluation_runner.SNR(clean_flat, error_flat)
-        # # getting the Delta SNR
-        snr_in = evaluation_runner.SNR(clean_flat, d_flat)  # SNR without filtering
-        delta_snr = snr_result - snr_in
-        # getting convergence time
-        convergence_time = evaluation_runner.convergence_time(
-            error=error_flat,
-            fs=16000,
-            samples_steady=300,
-            r_tol=0.05,
-            consecutive_samples=5,
-        )
-
-        return (
-            error,
-            noise_estimate,
-            adaption_mse_result,
-            speech_mse_result,
-            snr_result,
-            delta_snr,
-            elapsed_time,
-            convergence_time,
-        )
+        return error, noise_estimate
 
 
 # for frequency domain block based processing
@@ -252,7 +206,6 @@ class FrequencyDomainAF(BlockFilterModel):
         d: NDArray[np.float64],
         x: NDArray[np.float64],
         clean_signal: NDArray[np.float64],
-        return_metrics=False,
     ) -> tuple:
         """Iterates Adaptive filter alorithm and updates for length of input signal X
 
@@ -309,15 +262,10 @@ class FrequencyDomainAF(BlockFilterModel):
         # getting the number of samples from x len
         num_samples = len(x)
 
-        # creating evaluation object
-        evaluation_runner = EvaluationSuite(algorithm=self.algorithm)
-
         # initializing the arrays to hold error and noise estimate
         noise_estimate = np.zeros(num_samples)
         error = np.zeros(num_samples)
 
-        # clock-time for how long filtering this signal takes
-        start_time = time.perf_counter()
         # handling odd or '1' sample leftovers
         for sample in range(0, num_samples - self.hop_size + 1, self.hop_size):
             block = x[sample : sample + P]
@@ -379,42 +327,4 @@ class FrequencyDomainAF(BlockFilterModel):
                 self.H += self.update_step(e_f, x_f)
 
         # Only returning signals if metrics is false
-        if return_metrics is False:
-            return error, noise_estimate
-
-        # taking clock-time before running metrics
-        elapsed_time = time.perf_counter() - start_time
-
-        # to avoid memory issues, need to ensure signals are same shape
-        d_flat, y_flat, clean_flat, error_flat = evaluation_runner.signal_reshaper(
-            d, y_time, clean_signal, error
-        )
-
-        # What algo minimized
-        adaption_mse_result = evaluation_runner.MSE(d_flat, y_flat)
-        # How close e[n] is to s[n]
-        speech_mse_result = evaluation_runner.MSE(clean_flat, error_flat)
-        # full SNR
-        snr_result = evaluation_runner.SNR(clean_flat, error_flat)
-        # # getting the Delta SNR
-        snr_in = evaluation_runner.SNR(clean_flat, d_flat)  # SNR without filtering
-        delta_snr = snr_result - snr_in
-        # getting convergence time
-        convergence_time = evaluation_runner.convergence_time(
-            error=error_flat,
-            fs=16000,
-            samples_steady=300,
-            r_tol=0.05,
-            consecutive_samples=5,
-        )
-
-        return (
-            error,
-            noise_estimate,
-            adaption_mse_result,
-            speech_mse_result,
-            snr_result,
-            delta_snr,
-            elapsed_time,
-            convergence_time,
-        )
+        return error, noise_estimate
