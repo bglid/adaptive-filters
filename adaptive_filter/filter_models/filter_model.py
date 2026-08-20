@@ -54,9 +54,7 @@ class FilterModel:
         self,
         d: NDArray[np.float64],
         x: NDArray[np.float64],
-        clean_signal: NDArray[np.float64],
-        return_metrics=False,
-    ) -> tuple:
+    ) -> NDArray[np.float64]:
         """Iterates Adaptive filter alorithm and updates for length of input signal X
 
         Args:
@@ -64,20 +62,9 @@ class FilterModel:
                 "Desired Signal", which in the ANC use-case is the noisy input signal.
             x (NDArray[np.float64]):
                 Input reference matrix X, which in the ANC case is the noise reference.
-            clean_signal (NDArray[np.float64]):
-                Clean signal for final reference.
-            return_metrics (bool):
-                Check whether to return all calculated metrics. False by default.
 
         Returns:
-            tuple: A tuple containing the first two values if return metrics is False:
-                - NDArray[np.float64]: "Clean output" The error signal of d - y.
-                - NDArray[np.float64]: Predicted noise estimate.
-                - float: If return Metrics=True: Mean of the Adaption MSE across the signal.
-                - float: If return Metrics=True:Mean of the Speech MSE across the signal.
-                - float: If return Metrics=True:Global SNR across the signal.
-                - float: If return Metrics=True:Delta SNR improvement
-                - float: If return Metrics=True:Clock-time of filter performance
+            NDArray[np.float64]: "Clean output" The error signal of d - y.
 
         Raises:
             ValueError: If Signal dims are not compatible (1D)
@@ -96,18 +83,9 @@ class FilterModel:
         if x.ndim != 1:
             raise ValueError(f"Expected input signal to be 1D, got shape: {x.shape}")
 
-        clean_signal = np.asarray(clean_signal).ravel()
-        if clean_signal.ndim != 1:
-            raise ValueError(
-                f"Expected clean signal to be 1D, got shape: {clean_signal.shape}"
-            )
-
         if d.shape[0] < x.shape[0]:
             x = x[: d.shape[0]]
             # assert x.shape == d.shape  # Double check
-        if clean_signal.shape[0] < d.shape[0]:
-            d = d[: clean_signal.shape[0]]
-            x = x[: clean_signal.shape[0]]
 
         # getting the number of samples from x len
         num_samples = len(x)
@@ -135,5 +113,4 @@ class FilterModel:
             # updating the weights
             self.W += self.update_step(e_n=error[sample], x_n=circ_buffer)
 
-        # Only returning signals if metrics is false
-        return error, noise_estimate
+        return noise_estimate

@@ -59,6 +59,5 @@ def test_filter():
     assert d.shape == x.shape
     assert d.shape == clean.shape
 
-    # testing results when metrics not returned
-    results = model.filter(d, x, clean)
-    assert isinstance(results, tuple) and len(results) == 2
+    results = model.filter(d, x)
+    assert isinstance(results, np.ndarray)

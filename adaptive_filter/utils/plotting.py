@@ -28,7 +28,7 @@ class PlotSuite:
         signal: np.ndarray[Any, np.dtype[Any]],
         description: str,
         subplot: bool = False,
-    ) -> Union[None, ModuleType]:
+    ) -> None | ModuleType:
         """
         Summary: Plot to trace a given signal in the time domain
 
@@ -63,7 +63,7 @@ class PlotSuite:
         results: np.ndarray[Any, np.dtype[Any]],
         error_metric: str,
         subplot: bool = False,
-    ) -> Union[None, ModuleType]:
+    ) -> None | ModuleType:
         """
         Summary: Plot to trace the error over time.
 
