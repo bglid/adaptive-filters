@@ -74,7 +74,7 @@ from adaptive_filter.algorithms.nlms import NLMS
 nlms_af = NLMS(mu=0.001, n=32)
 
 # Assuming signals are already present and named accordingly 
-noise_estimate = nlms_af.filter(d=noisy_signal, x=noise)
+cleaned_signal = nlms_af.filter(d=noisy_signal, x=noise)
 ```
 
 Here: 
@@ -91,7 +91,7 @@ Organization and project originally inspired by [``Padasip``](https://github.com
 
 ## Citation
 
-HeIf you found any of this helpful, feel free to cite it, or just send us an email.
+If you found any of this helpful, feel free to cite it, or just send us an email.
 
 ```bibtex
 @misc{adaptive_filter,
