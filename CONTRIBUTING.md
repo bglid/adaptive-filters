@@ -77,6 +77,23 @@ To run the pre-commit hooks:
 uv run pre-commit run --all-files
 ```
 
+### File tracking
+
+We maintain `.gitignore` as a whitelist by ignoring all files by default and implicitly including only the files we actually need by prefixing them with `!`, e.g.:
+```bash
+# directory
+!adaptive_filter/
+
+# all subdirectories
+!adaptive_filter/**/
+
+# only python files
+!adaptive_filter/**/*.py
+```
+
+If you add new files to `.gitignore`, try to keep your additions reasonably concise by using wildcard like in the example above.
+Likewise, if you delete any files, make sure to remove any lines that are no longer necessary.
+
 ### Before submitting
 
 **Again, READ the section at the [top](#if-a-pr-is-submitted-with-no-issue-attached-and-a-green-light-on-working-on-a-pr-it-will-be-generally-closed-ai-prs-will-be-closed-automatically)**
@@ -85,11 +102,12 @@ Before submitting your code please do the following steps:
 
 1. Add tests for new changes
      - *Update documentation for significant changes.*
-2. Format your changes with isort and black
-3. Run uv run pytest
-4. Run uv run mypy .
-5. Run uv run pre-commit run --all-files
-6. Commit any changes to uv.lock if you modified project dependencies
+2. Update `.gitignore` to whitelist any files you created and remove any files you deleted.
+3. Format your changes with isort and black
+4. Run uv run pytest
+5. Run uv run mypy .
+6. Run uv run pre-commit run --all-files
+7. Commit any changes to uv.lock if you modified project dependencies
 
 ## Other help
 
