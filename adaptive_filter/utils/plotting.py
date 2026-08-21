@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from types import ModuleType
-from typing import Any, Optional, Union
+from typing import Any
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -1,7 +1,5 @@
 import sys
 
-import pytest
-
 from adaptive_filter.utils.arg_parsing import parse_args
 
 
