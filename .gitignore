@@ -9,10 +9,6 @@
 !tests/**/
 !tests/**/*.py
 
-!assets/
-!assets/**/
-!assets/**/*.svg
-
 # uv
 !pyproject.toml
 !uv.lock
