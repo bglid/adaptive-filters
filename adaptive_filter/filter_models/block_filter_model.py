@@ -1,12 +1,9 @@
 # Class that contains filter model used by most adaptive filters
 from typing import Any
 
-import time
 from collections import deque
 
 import numpy as np
-
-# from numpy.core.shape_base import block
 from numpy.typing import NDArray
 
 

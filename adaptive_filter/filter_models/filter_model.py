@@ -1,8 +1,6 @@
 # Class that contains filter model used by most adaptive filters
 from typing import Any
 
-import time
-
 import numpy as np
 from numpy.typing import NDArray
 
