@@ -15,10 +15,6 @@ license-files = ["LICENSE-APACHE", "LICENSE-MIT"]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.21.0,<2.0.0",
-    "matplotlib>=3.9.0,<4.0.0",
-    "scikit-learn==1.6.1",
-    "librosa==0.11.0",
-    "soundfile==0.13.1",
 ]
 classifiers = [  
   "Development Status :: 3 - Alpha",
@@ -32,8 +28,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bglid/ANC-adaptive-filters"
-Repository = "https://github.com/bglid/ANC-adaptive-filters"
+Homepage = "https://github.com/bglid/adaptive-filters"
+Repository = "https://github.com/bglid/adaptive-filters"
 
 
 [dependency-groups]

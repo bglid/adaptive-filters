@@ -1,12 +1,9 @@
 # Class that contains filter model used by most adaptive filters
 from typing import Any
 
-import time
 from collections import deque
 
 import numpy as np
-
-# from numpy.core.shape_base import block
 from numpy.typing import NDArray
 
 
@@ -31,7 +28,7 @@ class BlockFilterModel:
         # self.W = np.zeros(self.half_bins, dtype=np.complex128)
 
     def noise_estimate(self, x_n: NDArray[np.float64]) -> np.float64:
-        """Predicts the noise estimate, given vector X[n], noise reference. Uses formula W^T[n]X[n]
+        """Predict the noise estimate, given vector X[n], noise reference. Uses formula W^T[n]X[n].
 
         Args:
             x_n (NDArray[np.float64]): vector[n] of array X, the noise estimate
@@ -42,7 +39,7 @@ class BlockFilterModel:
         return np.dot(self.W, x_n)
 
     def error(self, d_n: float, noise_estimate: float) -> float:
-        """Calculates the error, e[n] = d[n] - y[n], y[n] is output of W^T[n]X[n]
+        """Calculate the error, e[n] = d[n] - y[n], y[n] is output of W^T[n]X[n].
 
         Args:
             d_n (float): Desired sample at point n of array D, noisy input
@@ -103,14 +100,10 @@ class BlockFilterModel:
 
         if d.shape[0] < x.shape[0]:
             x = x[: d.shape[0]]
-            # assert x.shape == d.shape  # Double check
-
-        # getting the number of samples from x len
-        num_samples = len(x)
 
         # initializing the arrays to hold error and noise estimate
-        noise_estimate = np.zeros(num_samples)
-        error = np.zeros(num_samples)
+        noise_estimate = np.zeros(len(x))
+        error = np.zeros(len(x))
 
         # creating a ciruclar buffer for the filter taps
         circ_buffer = np.zeros(self.N, dtype=float)
@@ -118,7 +111,7 @@ class BlockFilterModel:
         x_buffer = deque(maxlen=self.block_size)
         error_buffer = deque(maxlen=self.block_size)
 
-        for sample in range(num_samples):
+        for sample in range(len(x)):
             # using a circular buffer style window technique:
             circ_buffer = np.roll(circ_buffer, 1)
             # writer-pointer to add the most recent sample into the N buffer window
@@ -135,11 +128,17 @@ class BlockFilterModel:
             error_buffer.append(error[sample])
 
             # APA update
-            if len(x_buffer) == (self.block_size):
-                if self.algorithm not in ("FDLMS", "FDNLMS"):
-                    x_block = np.stack(x_buffer, axis=1)
-                    e_block = np.array(error_buffer)
-                    self.W += self.update_step(e_n=e_block, x_n=x_block)
+            # Note from present day - wow there is such a better way to do this lmao
+            if (len(x_buffer) == (self.block_size)) and (
+                self.algorithm
+                not in (
+                    "FDLMS",
+                    "FDNLMS",
+                )
+            ):
+                x_block = np.stack(x_buffer, axis=1)
+                e_block = np.array(error_buffer)
+                self.W += self.update_step(e_n=e_block, x_n=x_block)
 
         return error
 
@@ -184,7 +183,7 @@ class FrequencyDomainAF(BlockFilterModel):
         d: NDArray[np.float64],
         x: NDArray[np.float64],
     ) -> NDArray[np.float64]:
-        """Iterates Adaptive filter alorithm and updates for length of input signal X
+        """Iterate Adaptive filter alorithm and updates for length of input signal X.
 
         Args:
             d (NDArray[np.float64]):
@@ -209,7 +208,6 @@ class FrequencyDomainAF(BlockFilterModel):
 
         if d.shape[0] < x.shape[0]:
             x = x[: d.shape[0]]
-            # assert x.shape == d.shape  # Double check
 
         # pad amount
         P = 1 << int(np.ceil(np.log2(self.N + self.hop_size - 1)))

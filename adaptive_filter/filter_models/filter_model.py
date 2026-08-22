@@ -1,7 +1,4 @@
 # Class that contains filter model used by most adaptive filters
-from typing import Any
-
-import time
 
 import numpy as np
 from numpy.typing import NDArray
@@ -16,7 +13,7 @@ class FilterModel:
         self.algorithm = ""
 
     def noise_estimate(self, x_n: NDArray[np.float64]) -> np.float64:
-        """Predicts the noise estimate, given vector X[n], noise reference. Uses formula W^T[n]X[n]
+        """Predict the noise estimate, given vector X[n], noise reference. Uses formula W^T[n]X[n].
 
         Args:
             x_n (NDArray[np.float64]): vector[n] of array X, the noise estimate
@@ -27,7 +24,7 @@ class FilterModel:
         return np.dot(self.W, x_n)
 
     def error(self, d_n: float, noise_estimate: float) -> float:
-        """Calculates the error, e[n] = d[n] - y[n], y[n] is output of W^T[n]X[n]
+        """Calculate the error, e[n] = d[n] - y[n], y[n] is output of W^T[n]X[n].
 
         Args:
             d_n (float): Desired sample at point n of array D, noisy input
@@ -39,7 +36,7 @@ class FilterModel:
         return d_n - noise_estimate
 
     def update_step(self, e_n: float, x_n: NDArray[np.float64]) -> NDArray[np.float64]:
-        """Updates weights of W[n + 1], given the learning algorithm chosen
+        """Update weights of W[n + 1], given the learning algorithm chosen.
 
         Args:
             e_n (float): Error sample at point n
@@ -55,7 +52,7 @@ class FilterModel:
         d: NDArray[np.float64],
         x: NDArray[np.float64],
     ) -> NDArray[np.float64]:
-        """Iterates Adaptive filter alorithm and updates for length of input signal X
+        """Iterate Adaptive filter alorithm and updates for length of input signal X.
 
         Args:
             d (NDArray[np.float64]):
@@ -83,21 +80,18 @@ class FilterModel:
         if x.ndim != 1:
             raise ValueError(f"Expected input signal to be 1D, got shape: {x.shape}")
 
+        # truncating x if it's longer
         if d.shape[0] < x.shape[0]:
             x = x[: d.shape[0]]
-            # assert x.shape == d.shape  # Double check
-
-        # getting the number of samples from x len
-        num_samples = len(x)
 
         # initializing the arrays to hold error and noise estimate
-        noise_estimate = np.zeros(num_samples)
-        error = np.zeros(num_samples)
+        noise_estimate = np.zeros(len(x))
+        error = np.zeros(len(x))
 
         # creating a ciruclar buffer for the filter taps
         circ_buffer = np.zeros(self.N, dtype=float)
 
-        for sample in range(num_samples):
+        for sample in range(len(x)):
             # using a circular buffer style window technique:
             circ_buffer = np.roll(circ_buffer, 1)
             # writer-pointer to add the most recent sample into the N buffer window
