@@ -20,7 +20,7 @@ repos:
     hooks:
       - id: ruff-lint
         name: ruff-lint
-        entry: uv run ruff check --fix --settings-path pyproject.toml
+        entry: uv run ruff check --fix
         types: [python]
         language: system
 
@@ -28,6 +28,6 @@ repos:
     hooks:
       - id: ruff-fmt
         name: ruff-fmt
-        entry: uv run ruff format --check --settings-path pyproject.toml
+        entry: uv run ruff format --check
         types: [python]
         language: system
