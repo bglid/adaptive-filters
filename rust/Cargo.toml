@@ -1,0 +1,24 @@
+[package]
+name = "adaptive-filters"
+version = "0.2.0"
+edition = "2024"
+
+[dependencies]
+
+[lints.clippy]
+pedantic = {level = "warn", priority = -1}
+restriction = {level = "warn", priority = -1}
+blanket_clippy_restriction_lints = "allow"
+
+# no-brainers
+arithmetic_side_effects = "allow" # otherwise we get warnings about potential overflows on _every_ arithmetic op
+implicit_return = "allow" # leaving out the `return` keyword is idiomatic
+must_use_candidate = "allow" # just shows where #[must_use] can be used
+
+# maybe
+missing_docs_in_private_items = "allow"
+
+# Requires short functions to be explicitly inlined, because automatic inlining can't be done across crates w/o LTO. 
+# This may be worth considering for the pure Rust API, but for PyO3 it's irrelevant.
+# We can also just mark only the performance critical functions as inline.
+missing_inline_in_public_items = "allow" 
