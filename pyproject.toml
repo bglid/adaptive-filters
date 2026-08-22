@@ -35,11 +35,9 @@ Repository = "https://github.com/bglid/adaptive-filters"
 [dependency-groups]
 dev = [
     "bandit>=1.7.1,<2.0.0",
-    "darglint>=1.8.1,<2.0.0",
     "mypy>=1.14.0",
     "mypy-extensions>=1.0.0,<2.0.0",
     "pre-commit>=4.0.1,<5.0.0",
-    "pydocstyle>=6.1.1,<7.0.0",
     "pylint>=3.3.7,<4.0.0",
     "pytest>=9.1.1",
     "pyupgrade>=3.19.1,<4.0.0",
@@ -62,7 +60,8 @@ exclude = [
 ]
 
 [tool.ruff.lint]
-extend-select = ["I", "B"]
+extend-select = ["I", "B", "DOC"]
+preview = true
 
 
 [tool.mypy]
