@@ -63,6 +63,8 @@ exclude = [
 extend-select = ["I", "B", "DOC"]
 preview = true
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
