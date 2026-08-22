@@ -10,22 +10,12 @@ repos:
 
   - repo: local
     hooks:
-      - id: pyupgrade
-        name: pyupgrade
-        entry: uv run pyupgrade --py310-plus
-        types: [python]
-        language: system
-
-  - repo: local
-    hooks:
       - id: ruff-lint
         name: ruff-lint
         entry: uv run ruff check --fix
         types: [python]
         language: system
 
-  - repo: local
-    hooks:
       - id: ruff-fmt
         name: ruff-fmt
         entry: uv run ruff format --check
