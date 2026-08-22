@@ -22,3 +22,6 @@ missing_docs_in_private_items = "allow"
 # This may be worth considering for the pure Rust API, but for PyO3 it's irrelevant.
 # We can also just mark only the performance critical functions as inline.
 missing_inline_in_public_items = "allow" 
+
+# This one is supposed to skip test modules (#[cfg(test)]), but as of 1.98.0 it only works on nightly
+inline_modules = "allow"
