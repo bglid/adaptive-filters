@@ -2,7 +2,7 @@
 
 [![Actions status](https://github.com/bglid/adaptive-filters/workflows/build/badge.svg)](https://github.com/bglid/adaptive-filters/actions)
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
 [![License](https://img.shields.io/github/license/bglid/adaptive-filters)](https://github.com/bglid/adaptive-filters/blob/master/LICENSE)
 
@@ -67,12 +67,12 @@ Filters can be imported from the `adaptive_filter` package.
 
 NLMS adaptive filter example:
 ```python
-from adaptive_filter.algorithms.nlms import NLMS 
+from adaptive_filter.algorithms.nlms import NLMS
 
 # setting up filter
 nlms_af = NLMS(mu=0.001, n=32)
 
-# Assuming signals are already present and named accordingly 
+# Assuming signals are already present and named accordingly
 cleaned_signal = nlms_af.filter(d=noisy_signal, x=noise)
 ```
 

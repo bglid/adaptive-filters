@@ -1,7 +1,6 @@
 # Class that contains filter model used by most adaptive filters
-from typing import Any
-
 from collections import deque
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray

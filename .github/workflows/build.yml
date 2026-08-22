@@ -27,9 +27,8 @@ jobs:
 
       - name: Run style checks
         run: |
-          uv run isort --diff --check-only --settings-path pyproject.toml .
-          uv run black --diff --check --config pyproject.toml .
-          uv run darglint --verbosity 2 adaptive_filter tests
+          uv run ruff check .
+          uv run ruff format --check .
 
       # - name: Run type checks
       #   run: uv run mypy --config-file pyproject.toml .

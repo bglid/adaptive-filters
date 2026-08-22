@@ -29,11 +29,11 @@ uv run pre-commit install
 
 ## Codestyle
 
-Format the code with:
+Format & lint the code with:
 
 ```bash
-uv run isort . 
-uv run black .
+uv run ruff check --fix . 
+uv run ruff format .  
 ```
 
 Apply Python syntax upgrades with:
@@ -54,14 +54,6 @@ To run the mypy type checking:
 
 ```bash
 uv run mypy .
-```
-
-To run the style checking:
-
-```bash
-uv run isort --diff --check-only . 
-uv run black --diff --check . 
-uv run darglint --verbosity 2 adaptive_filter tests  # this'll run on the tests too
 ```
 
 To run the security checks:
@@ -103,7 +95,7 @@ Before submitting your code please do the following steps:
 1. Add tests for new changes
      - *Update documentation for significant changes.*
 2. Update `.gitignore` to whitelist any files you created and remove any files you deleted.
-3. Format your changes with isort and black
+3. Format your changes with ruff 
 4. Run uv run pytest
 5. Run uv run mypy .
 6. Run uv run pre-commit run --all-files

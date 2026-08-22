@@ -1,6 +1,5 @@
 """Python implementation of DSP adaptive filters"""
 
-import sys
 from importlib import metadata as importlib_metadata
 
 

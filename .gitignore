@@ -28,7 +28,6 @@
 
 # static analysis / linting
 !pyrightconfig.json
-!setup.cfg
 
 # explitic excludes
 **/__pycache__/
