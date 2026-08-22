@@ -67,12 +67,12 @@ Filters can be imported from the `adaptive_filter` package.
 
 NLMS adaptive filter example:
 ```python
-from adaptive_filter.algorithms.nlms import NLMS 
+from adaptive_filter.algorithms.nlms import NLMS
 
 # setting up filter
 nlms_af = NLMS(mu=0.001, n=32)
 
-# Assuming signals are already present and named accordingly 
+# Assuming signals are already present and named accordingly
 cleaned_signal = nlms_af.filter(d=noisy_signal, x=noise)
 ```
 

@@ -18,16 +18,24 @@ repos:
 
   - repo: local
     hooks:
-      - id: isort
-        name: isort
-        entry: uv run isort --settings-path pyproject.toml
+      - id: black
+        name: black
+        entry: uv run black --config pyproject.toml
         types: [python]
         language: system
 
   - repo: local
     hooks:
-      - id: black
-        name: black
-        entry: uv run black --config pyproject.toml
+      - id: ruff-lint
+        name: ruff-lint
+        entry: uv run ruff check --settings-path pyproject.toml
+        types: [python]
+        language: system
+
+  - repo: local
+    hooks:
+      - id: ruff-fmt
+        name: ruff-fmt
+        entry: uv run ruff format --settings-path pyproject.toml
         types: [python]
         language: system
