@@ -1,6 +1,8 @@
 use std::collections::VecDeque;
 use std::num::NonZeroUsize;
 
+use rand_distr::{Distribution as _, Normal};
+
 // TODO: make f64 generic
 
 // The only way to get a single slice from a VecDeque is by calling make_contiguous().
@@ -50,9 +52,23 @@ pub struct Filter<A: Algorithm> {
     window_size: NonZeroUsize,
 }
 impl<A: Algorithm> Filter<A> {
+    #[allow(clippy::missing_panics_doc, reason = "See reason below")]
     pub fn new(algorithm: A, window_size: NonZeroUsize) -> Self {
-        let weights = Vec::with_capacity(window_size.into());
-        // TODO: init weights
+        let weights = {
+            let mut rng = rand::rng();
+
+            #[allow(
+                clippy::unwrap_used,
+                reason = "Can only fail if std_dev is negative or infinity"
+            )]
+            let normal_dist = Normal::new(0.0, 0.5).unwrap();
+
+            normal_dist
+                .sample_iter(&mut rng)
+                .take(window_size.into())
+                .map(|w| w * 0.001) // Setting weights close to zero
+                .collect()
+        };
 
         Filter {
             algorithm,
