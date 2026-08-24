@@ -1,4 +1,5 @@
 use std::num::{NonZero, NonZeroUsize};
+use std::ops::{Deref, DerefMut};
 
 use rand_distr::{Distribution as _, Normal};
 
@@ -10,34 +11,21 @@ use crate::sample_buffer::{SampleBuffer, SampleView};
 
 pub struct FilterBase<A: Algorithm> {
     algorithm: A,
-    weights: Vec<f64>,
-    window_size: NonZeroUsize,
+    weights: FilterWeights,
+    // window_size: NonZeroUsize,
 }
 impl<A: Algorithm> FilterBase<A> {
     #[allow(clippy::missing_panics_doc, reason = "Can't panic; See reason below")]
     pub fn new(algorithm: A, window_size: usize) -> Option<Self> {
         let window_size = NonZero::new(window_size)?;
 
-        let weights = {
-            let mut rng = rand::rng();
-
-            #[allow(
-                clippy::unwrap_used,
-                reason = "Can only fail if std_dev is negative or infinity"
-            )]
-            let normal_dist = Normal::new(0.0, 0.5).unwrap();
-
-            normal_dist
-                .sample_iter(&mut rng)
-                .take(window_size.into())
-                .map(|w| w * 0.001) // Setting weights close to zero
-                .collect()
-        };
+        // The ? won't propagate a None because this function can only fail if std_dev is negative or infinity
+        let weights = FilterWeights::new(window_size, 0.0, 0.5, 1e-4)?;
 
         Some(FilterBase {
             algorithm,
             weights,
-            window_size,
+            // window_size,
         })
     }
 
@@ -62,18 +50,9 @@ impl<A: Algorithm> FilterBase<A> {
         let n_samples = input_signal.len();
 
         let mut cleaned_signal = Vec::<f64>::with_capacity(n_samples);
-        // TODO: replace window_size with weights.len() (then remove the check below)
-        let mut noise_samples = SampleBuffer::new(self.window_size);
 
-        // We make this check once here so that we don't have to do it for every sample,
-        // relying on the invariant that weights.len() == buffer.len() == window size.
-        // If this check fails, it means that this invariant isn't properly enforced elsewhere.
-        if self.weights.len() != noise_samples.len() {
-            return Err(FilterError::WeightSizeMismatch {
-                weight_len: self.weights.len(),
-                buffer_len: noise_samples.len(),
-            });
-        }
+        // This ensures that estimate_noise() runs correctly because the buffer length matches the number of weights
+        let mut noise_samples = SampleBuffer::new(self.weights.count);
 
         #[allow(
             clippy::indexing_slicing,
@@ -98,7 +77,7 @@ impl<A: Algorithm> FilterBase<A> {
     // IMPORTANT: This function assumes that the invariant weights.len() == x_n.len() == window size is properly enforced.
     // Since none of these variables should change during the processing loop, we don't need to check it every iteration.
     // This avoids repeated unnecessary checks in the hot path.
-    // It's up to the processing function to check that the lenghts are the same.
+    // It's up to the processing function to make sure that the lenghts are the same.
     #[inline]
     fn estimate_noise<T>(&self, x_n: &T) -> f64
     where
@@ -114,6 +93,46 @@ impl<A: Algorithm> FilterBase<A> {
     #[inline]
     fn error(input_sample: f64, noise_estimate: f64) -> f64 {
         input_sample - noise_estimate
+    }
+}
+
+struct FilterWeights {
+    weights: Box<[f64]>, // We use a boxed slice instead of a Vec to ensure length doesn't change
+    count: NonZeroUsize,
+}
+impl FilterWeights {
+    pub fn new(
+        window_size: NonZeroUsize,
+        mean: f64,
+        std_dev: f64,
+        scaling_factor: f64,
+    ) -> Option<Self> {
+        let mut rng = rand::rng();
+
+        let normal_dist = Normal::new(mean, std_dev).ok()?;
+
+        let weights = normal_dist
+            .sample_iter(&mut rng)
+            .take(window_size.into())
+            .map(|w| w * scaling_factor)
+            .collect::<Vec<f64>>()
+            .into_boxed_slice();
+
+        Some(FilterWeights {
+            weights,
+            count: window_size,
+        })
+    }
+}
+impl Deref for FilterWeights {
+    type Target = Box<[f64]>;
+    fn deref(&self) -> &Self::Target {
+        &self.weights
+    }
+}
+impl DerefMut for FilterWeights {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.weights
     }
 }
 
@@ -138,7 +157,10 @@ mod tests {
 
     fn testing_filter() -> FilterBase<TestAlgorithm> {
         let mut filter = FilterBase::<TestAlgorithm>::new(TestAlgorithm {}, 3).unwrap();
-        filter.weights = vec![1.0, -2.0, 0.5];
+        filter.weights = FilterWeights {
+            weights: Box::new([1.0, -2.0, 0.5]),
+            count: NonZero::new(3).unwrap(),
+        };
         filter
     }
 

@@ -1,6 +1,7 @@
 use crate::{filter_base::FilterBase, sample_buffer::SampleView};
 
 pub trait Algorithm {
+    // TODO: rename e_n and x_n
     fn update_step<T>(&self, weights: &mut [f64], e_n: f64, x_n: &T)
     where
         T: SampleView;
