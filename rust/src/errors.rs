@@ -3,6 +3,7 @@ use std::fmt::Display;
 pub type FilterResult<T> = Result<T, FilterError>;
 
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum FilterError {
     EmptyInputArr,
     NoiseRefTooShort {
