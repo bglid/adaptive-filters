@@ -1,0 +1,159 @@
+use std::collections::VecDeque;
+use std::num::{NonZero, NonZeroUsize};
+
+// The only way to get a single slice from a VecDeque (used under the hood by SampleBuffer)
+// is by calling make_contiguous(), which shifts the elements within the queue.
+// Calling it for every sample is unnecessarily expensive, since we need to access
+// the individual elementsfor operations like dot products anyway,
+// so instead we use this trait to provide a common interface.
+#[allow(
+    clippy::len_without_is_empty,
+    reason = "Should only be used with fixed-size containers"
+)]
+pub trait SampleView {
+    fn len(&self) -> usize;
+    fn get(&self, idx: usize) -> Option<&f64>;
+
+    fn iter(&self) -> SampleIter<'_, Self> {
+        SampleIter {
+            buffer: self,
+            next_idx: 0,
+        }
+    }
+}
+pub struct SampleIter<'a, T>
+where
+    T: SampleView + ?Sized,
+{
+    buffer: &'a T,
+    next_idx: usize,
+}
+impl<'a, T> Iterator for SampleIter<'a, T>
+where
+    T: SampleView + ?Sized,
+{
+    type Item = &'a f64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let item = self.buffer.get(self.next_idx);
+        self.next_idx += 1;
+        item
+    }
+}
+
+// Fixed-size ring buffer for processing samples.
+// Functions must ensure that samples.len() is the same before and after function calls
+// to enforce the invariant weights.len() == buffer.len() == window_size
+pub struct SampleBuffer {
+    samples: VecDeque<f64>,
+    capacity: NonZeroUsize,
+}
+impl SampleBuffer {
+    pub fn new(capacity: NonZeroUsize) -> Self {
+        SampleBuffer {
+            samples: std::iter::repeat_n(0.0, capacity.into()).collect(),
+            capacity,
+        }
+    }
+
+    #[allow(
+        unused,
+        reason = "Used by some tests, and may be useful in the future, e.g. for block processing"
+    )]
+    pub fn from(arr: &[f64]) -> Option<Self> {
+        let capacity = NonZero::new(arr.len())?;
+        let mut buff = SampleBuffer::new(capacity);
+        for val in arr {
+            buff.push(*val);
+        }
+        Some(buff)
+    }
+
+    pub fn push(&mut self, sample: f64) {
+        if self.samples.len() == self.capacity.into() {
+            self.samples.pop_front();
+        }
+        self.samples.push_back(sample);
+    }
+}
+impl SampleView for SampleBuffer {
+    fn len(&self) -> usize {
+        self.samples.len()
+    }
+    fn get(&self, idx: usize) -> Option<&f64> {
+        self.samples.get(idx)
+    }
+}
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used, clippy::indexing_slicing, reason = "Tests")]
+mod tests {
+    use super::*;
+    use crate::test_utils::approx_equal;
+    use std::num::NonZero;
+
+    fn same_elements(buffer: &SampleBuffer, arr: &[f64]) -> bool {
+        if buffer.len() != arr.len() {
+            return false;
+        }
+
+        for (i, elem) in arr.iter().enumerate().take(buffer.len()) {
+            if !approx_equal(*buffer.get(i).unwrap(), *elem, 1e-6) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    #[test]
+    fn init_to_zero() {
+        let buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+
+        assert!(same_elements(&buffer, &[0_f64; 3]));
+    }
+
+    #[test]
+    fn push() {
+        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+
+        buffer.push(1.0);
+        assert_eq!(buffer.len(), 3);
+        assert!(same_elements(&buffer, &[0.0, 0.0, 1.0]));
+
+        buffer.push(2.0);
+        assert_eq!(buffer.len(), 3);
+        assert!(same_elements(&buffer, &[0.0, 1.0, 2.0]));
+    }
+
+    #[test]
+    fn buffer_size_invariant() {
+        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+
+        buffer.push(1.0);
+        buffer.push(2.0);
+        buffer.push(3.0);
+
+        assert_eq!(buffer.len(), 3);
+        assert!(same_elements(&buffer, &[1.0, 2.0, 3.0]));
+
+        buffer.push(4.0);
+
+        assert_eq!(buffer.len(), 3);
+        assert!(same_elements(&buffer, &[2.0, 3.0, 4.0]));
+    }
+
+    #[test]
+    fn get() {
+        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+
+        buffer.push(1.0);
+        buffer.push(2.0);
+        buffer.push(3.0);
+
+        assert_eq!(buffer.get(0), Some(&1.0));
+        assert_eq!(buffer.get(1), Some(&2.0));
+        assert_eq!(buffer.get(2), Some(&3.0));
+        assert_eq!(buffer.get(3), None);
+    }
+}
