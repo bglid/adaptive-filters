@@ -5,7 +5,7 @@ use rand_distr::{Distribution as _, Normal};
 
 use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
-use crate::sample_buffer::{SampleBuffer, SampleView};
+use crate::sample_buffer::{SampleBuffer, SampleView as _};
 
 // TODO: make f64 generic
 
@@ -52,7 +52,7 @@ impl<A: Algorithm> FilterBase<A> {
         let mut cleaned_signal = Vec::<f64>::with_capacity(n_samples);
 
         // This ensures that estimate_noise() runs correctly because the buffer length matches the number of weights
-        let mut noise_samples = SampleBuffer::new(self.weights.count);
+        let mut noise_samples = SampleBuffer::new(&self.weights);
 
         #[allow(
             clippy::indexing_slicing,
@@ -74,15 +74,9 @@ impl<A: Algorithm> FilterBase<A> {
         Ok(cleaned_signal)
     }
 
-    // IMPORTANT: This function assumes that the invariant weights.len() == x_n.len() == window size is properly enforced.
-    // Since none of these variables should change during the processing loop, we don't need to check it every iteration.
-    // This avoids repeated unnecessary checks in the hot path.
-    // It's up to the processing function to make sure that the lenghts are the same.
     #[inline]
-    fn estimate_noise<T>(&self, x_n: &T) -> f64
-    where
-        T: SampleView,
-    {
+    fn estimate_noise(&self, x_n: &SampleBuffer) -> f64 {
+        // SampleBuffer is initiated with the same length as weights, therefore we don't need to check
         self.weights
             .iter()
             .zip(x_n.iter())
@@ -96,9 +90,8 @@ impl<A: Algorithm> FilterBase<A> {
     }
 }
 
-struct FilterWeights {
+pub struct FilterWeights {
     weights: Box<[f64]>, // We use a boxed slice instead of a Vec to ensure length doesn't change
-    count: NonZeroUsize,
 }
 impl FilterWeights {
     pub fn new(
@@ -118,10 +111,7 @@ impl FilterWeights {
             .collect::<Vec<f64>>()
             .into_boxed_slice();
 
-        Some(FilterWeights {
-            weights,
-            count: window_size,
-        })
+        Some(FilterWeights { weights })
     }
 }
 impl Deref for FilterWeights {
@@ -141,6 +131,7 @@ impl DerefMut for FilterWeights {
 mod tests {
     use super::*;
 
+    use crate::sample_buffer::SampleView;
     use crate::test_utils::approx_equal;
 
     struct TestAlgorithm;
@@ -159,7 +150,6 @@ mod tests {
         let mut filter = FilterBase::<TestAlgorithm>::new(TestAlgorithm {}, 3).unwrap();
         filter.weights = FilterWeights {
             weights: Box::new([1.0, -2.0, 0.5]),
-            count: NonZero::new(3).unwrap(),
         };
         filter
     }
@@ -167,6 +157,7 @@ mod tests {
     #[test]
     fn estimate_noise() {
         let filter = testing_filter();
+
         let x_n = SampleBuffer::from(&[2.0, 3.0, 4.0]).unwrap();
 
         let res = filter.estimate_noise(&x_n);

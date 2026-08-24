@@ -1,6 +1,8 @@
 use std::collections::VecDeque;
 use std::num::{NonZero, NonZeroUsize};
 
+use crate::filter_base::FilterWeights;
+
 // The only way to get a single slice from a VecDeque (used under the hood by SampleBuffer)
 // is by calling make_contiguous(), which shifts the elements within the queue.
 // Calling it for every sample is unnecessarily expensive, since we need to access
@@ -49,10 +51,11 @@ pub struct SampleBuffer {
     capacity: NonZeroUsize,
 }
 impl SampleBuffer {
-    pub fn new(capacity: NonZeroUsize) -> Self {
+    pub fn new(weights: &FilterWeights) -> Self {
         SampleBuffer {
-            samples: std::iter::repeat_n(0.0, capacity.into()).collect(),
-            capacity,
+            samples: std::iter::repeat_n(0.0, weights.len()).collect(),
+            #[allow(clippy::unwrap_used, reason = "weights.len() is guaranteed non-zero")]
+            capacity: NonZero::new(weights.len()).unwrap(),
         }
     }
 
@@ -60,12 +63,13 @@ impl SampleBuffer {
         unused,
         reason = "Used by some tests, and may be useful in the future, e.g. for block processing"
     )]
+    // TODO: remove this because it creates a buffer of arbitrary length
     pub fn from(arr: &[f64]) -> Option<Self> {
         let capacity = NonZero::new(arr.len())?;
-        let mut buff = SampleBuffer::new(capacity);
-        for val in arr {
-            buff.push(*val);
-        }
+        let buff = SampleBuffer {
+            samples: arr.iter().copied().collect(),
+            capacity,
+        };
         Some(buff)
     }
 
@@ -108,14 +112,15 @@ mod tests {
 
     #[test]
     fn init_to_zero() {
-        let buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+        let weights = FilterWeights::new(NonZero::new(3).unwrap(), 0.0, 0.5, 1e-4).unwrap();
+        let buffer = SampleBuffer::new(&weights);
 
         assert!(same_elements(&buffer, &[0_f64; 3]));
     }
 
     #[test]
     fn push() {
-        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
 
         buffer.push(1.0);
         assert_eq!(buffer.len(), 3);
@@ -128,7 +133,7 @@ mod tests {
 
     #[test]
     fn buffer_size_invariant() {
-        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
 
         buffer.push(1.0);
         buffer.push(2.0);
@@ -145,7 +150,7 @@ mod tests {
 
     #[test]
     fn get() {
-        let mut buffer = SampleBuffer::new(NonZero::new(3).unwrap());
+        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
 
         buffer.push(1.0);
         buffer.push(2.0);
