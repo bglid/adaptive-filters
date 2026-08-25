@@ -6,6 +6,7 @@ pub struct FilterWeights {
     weights: Box<[f64]>, // We use a boxed slice instead of a Vec to ensure length doesn't change
 }
 impl FilterWeights {
+    // TODO: rename to from_normal_dist()? or just use default() with from_distribution()
     pub fn new(
         window_size: NonZeroUsize,
         mean: f64,
