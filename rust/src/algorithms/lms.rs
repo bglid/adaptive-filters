@@ -1,12 +1,7 @@
-use crate::filter_base::FilterBase;
-use crate::sample_buffer::SampleBuffer;
+use crate::filters::SampleBuffer;
 
-pub trait Algorithm {
-    // TODO: rename e_n and x_n
-    fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer);
-}
+use crate::algorithms::Algorithm;
 
-pub type LMSFilter = FilterBase<LeastMeanSquares>;
 pub struct LeastMeanSquares {
     mu: f64,
 }

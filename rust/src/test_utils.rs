@@ -7,13 +7,14 @@
 
 use std::num::NonZero;
 
-use crate::filter_base::FilterWeights;
-use crate::sample_buffer::SampleBuffer;
+use crate::filters::FilterWeights;
+use crate::filters::SampleBuffer;
 
 pub fn approx_equal(a: f64, b: f64, eps: f64) -> bool {
     (a - b).abs() < eps
 }
 
+// TODO: use a generic with ExactSizeIterator so that we can compare SampleBuffers
 pub fn all_approx_equal(a: &[f64], b: &[f64]) -> bool {
     if a.len() == b.len() {
         a.iter()

@@ -34,6 +34,8 @@ min_ident_chars = "allow" # to represent single-character variables used in lite
 shadow_reuse = "allow" # variable shadowing is useful
 default_numeric_fallback = "allow" # many false positives
 separated_literal_suffix = "allow" # easier to read than unseparated
+pub_use = "allow" # it's neater to keep public items in their own modules than keep them all in one mod.rs file
+mod_module_files = "allow" # modules should be self-contained to a directory
 
 # maybe
 missing_docs_in_private_items = "allow"

@@ -1,6 +1,5 @@
 pub mod algorithms;
 pub mod errors;
-pub mod filter_base;
+pub mod filters;
 
-mod sample_buffer;
 mod test_utils;

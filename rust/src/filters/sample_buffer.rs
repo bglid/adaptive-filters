@@ -1,17 +1,23 @@
 use std::collections::VecDeque;
 use std::num::{NonZero, NonZeroUsize};
 
-use crate::filter_base::FilterWeights;
+use crate::filters::FilterWeights;
 
 // Fixed-size ring buffer for processing samples.
 // Functions must ensure that samples.len() is the same before and after function calls
 // to enforce the invariant weights.len() == buffer.len() == window_size
+#[allow(
+    clippy::len_without_is_empty,
+    reason = "Buffer has a fixed size and can't be empty"
+)]
 pub struct SampleBuffer {
     samples: VecDeque<f64>,
     capacity: NonZeroUsize,
 }
 impl SampleBuffer {
-    // We get the capacity directly from the weights to assure the invariant is enforced
+    // We get the capacity directly from the weights to guarantee
+    // that the buffer length and the number of weights are the same.
+    #[allow(clippy::missing_panics_doc, reason = "See unwrap_used below")]
     pub fn new(weights: &FilterWeights) -> Self {
         SampleBuffer {
             samples: std::iter::repeat_n(0.0, weights.len()).collect(),
@@ -40,6 +46,13 @@ impl SampleBuffer {
             buffer: self,
             next_idx: 0,
         }
+    }
+}
+impl<'a> IntoIterator for &'a SampleBuffer {
+    type Item = &'a f64;
+    type IntoIter = SampleIter<'a>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }
 
