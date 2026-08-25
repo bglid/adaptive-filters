@@ -5,7 +5,7 @@ use rand_distr::{Distribution as _, Normal};
 
 use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
-use crate::sample_buffer::{SampleBuffer, SampleView as _};
+use crate::sample_buffer::SampleBuffer;
 
 // TODO: make f64 generic
 
@@ -131,15 +131,11 @@ impl DerefMut for FilterWeights {
 mod tests {
     use super::*;
 
-    use crate::sample_buffer::SampleView;
     use crate::test_utils::approx_equal;
 
     struct TestAlgorithm;
     impl Algorithm for TestAlgorithm {
-        fn update_step<T>(&self, weights: &mut [f64], e_n: f64, x_n: &T)
-        where
-            T: SampleView,
-        {
+        fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
             for (i, w) in weights.iter_mut().enumerate() {
                 *w += e_n * x_n.get(i).unwrap();
             }

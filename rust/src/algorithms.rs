@@ -1,10 +1,9 @@
-use crate::{filter_base::FilterBase, sample_buffer::SampleView};
+use crate::filter_base::FilterBase;
+use crate::sample_buffer::SampleBuffer;
 
 pub trait Algorithm {
     // TODO: rename e_n and x_n
-    fn update_step<T>(&self, weights: &mut [f64], e_n: f64, x_n: &T)
-    where
-        T: SampleView;
+    fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer);
 }
 
 pub type LMSFilter = FilterBase<LeastMeanSquares>;
@@ -12,10 +11,7 @@ pub struct LeastMeanSquares {
     mu: f64,
 }
 impl Algorithm for LeastMeanSquares {
-    fn update_step<T>(&self, weights: &mut [f64], e_n: f64, x_n: &T)
-    where
-        T: SampleView,
-    {
+    fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
         for (w, x) in weights.iter_mut().zip(x_n.iter()) {
             *w += self.mu * e_n * x;
         }

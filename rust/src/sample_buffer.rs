@@ -3,46 +3,6 @@ use std::num::{NonZero, NonZeroUsize};
 
 use crate::filter_base::FilterWeights;
 
-// The only way to get a single slice from a VecDeque (used under the hood by SampleBuffer)
-// is by calling make_contiguous(), which shifts the elements within the queue.
-// Calling it for every sample is unnecessarily expensive, since we need to access
-// the individual elementsfor operations like dot products anyway,
-// so instead we use this trait to provide a common interface.
-#[allow(
-    clippy::len_without_is_empty,
-    reason = "Should only be used with fixed-size containers"
-)]
-pub trait SampleView {
-    fn len(&self) -> usize;
-    fn get(&self, idx: usize) -> Option<&f64>;
-
-    fn iter(&self) -> SampleIter<'_, Self> {
-        SampleIter {
-            buffer: self,
-            next_idx: 0,
-        }
-    }
-}
-pub struct SampleIter<'a, T>
-where
-    T: SampleView + ?Sized,
-{
-    buffer: &'a T,
-    next_idx: usize,
-}
-impl<'a, T> Iterator for SampleIter<'a, T>
-where
-    T: SampleView + ?Sized,
-{
-    type Item = &'a f64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let item = self.buffer.get(self.next_idx);
-        self.next_idx += 1;
-        item
-    }
-}
-
 // Fixed-size ring buffer for processing samples.
 // Functions must ensure that samples.len() is the same before and after function calls
 // to enforce the invariant weights.len() == buffer.len() == window_size
@@ -51,6 +11,7 @@ pub struct SampleBuffer {
     capacity: NonZeroUsize,
 }
 impl SampleBuffer {
+    // We get the capacity directly from the weights to assure the invariant is enforced
     pub fn new(weights: &FilterWeights) -> Self {
         SampleBuffer {
             samples: std::iter::repeat_n(0.0, weights.len()).collect(),
@@ -79,13 +40,34 @@ impl SampleBuffer {
         }
         self.samples.push_back(sample);
     }
-}
-impl SampleView for SampleBuffer {
-    fn len(&self) -> usize {
-        self.samples.len()
-    }
-    fn get(&self, idx: usize) -> Option<&f64> {
+
+    pub fn get(&self, idx: usize) -> Option<&f64> {
         self.samples.get(idx)
+    }
+
+    pub fn len(&self) -> usize {
+        self.capacity.into()
+    }
+
+    pub fn iter(&self) -> SampleIter<'_> {
+        SampleIter {
+            buffer: self,
+            next_idx: 0,
+        }
+    }
+}
+
+pub struct SampleIter<'a> {
+    buffer: &'a SampleBuffer,
+    next_idx: usize,
+}
+impl<'a> Iterator for SampleIter<'a> {
+    type Item = &'a f64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let item = self.buffer.get(self.next_idx);
+        self.next_idx += 1;
+        item
     }
 }
 
