@@ -71,7 +71,6 @@ impl<A: Algorithm> FilterBase<A> {
         Ok(cleaned_signal)
     }
 
-    #[inline]
     fn process_sample(
         &self,
         input_sample: f64,
@@ -98,7 +97,6 @@ impl<A: Algorithm> FilterBase<A> {
         }
     }
 
-    #[inline]
     fn estimate_noise(&self, x_n: &SampleBuffer) -> f64 {
         // SampleBuffer is initiated with the same length as weights, therefore we don't need to check
         self.weights
@@ -108,7 +106,6 @@ impl<A: Algorithm> FilterBase<A> {
             .sum()
     }
 
-    #[inline]
     fn error(input_sample: f64, noise_estimate: f64) -> f64 {
         input_sample - noise_estimate
     }
