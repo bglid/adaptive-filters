@@ -14,12 +14,21 @@ pub fn approx_equal(a: f64, b: f64, eps: f64) -> bool {
     (a - b).abs() < eps
 }
 
-// TODO: use a generic with ExactSizeIterator so that we can compare SampleBuffers
-pub fn all_approx_equal(a: &[f64], b: &[f64]) -> bool {
+pub fn approx_equal_iter<'a, 'b, I, J>(a: I, b: J, eps: f64) -> bool
+where
+    I: Iterator<Item = &'a f64>,
+    J: Iterator<Item = &'b f64>,
+{
+    a.zip(b).all(|(x, y)| approx_equal(*x, *y, eps))
+}
+
+pub fn all_approx_equal<'a, 'b, I, J>(a: I, b: J) -> bool
+where
+    I: ExactSizeIterator<Item = &'a f64>,
+    J: ExactSizeIterator<Item = &'b f64>,
+{
     if a.len() == b.len() {
-        a.iter()
-            .zip(b.iter())
-            .all(|(x, y)| approx_equal(*x, *y, 1e-6))
+        approx_equal_iter(a, b, 1e-6)
     } else {
         false
     }

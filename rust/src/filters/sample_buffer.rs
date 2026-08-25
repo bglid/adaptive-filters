@@ -69,34 +69,25 @@ impl<'a> Iterator for SampleIter<'a> {
         item
     }
 }
+impl ExactSizeIterator for SampleIter<'_> {
+    fn len(&self) -> usize {
+        self.buffer.len()
+    }
+}
 
 #[cfg(test)]
 #[allow(clippy::unwrap_used, clippy::indexing_slicing, reason = "Tests")]
 mod tests {
     use super::*;
-    use crate::test_utils::{approx_equal, sample_buffer_from};
+    use crate::test_utils::{all_approx_equal, sample_buffer_from};
     use std::num::NonZero;
-
-    fn same_elements(buffer: &SampleBuffer, arr: &[f64]) -> bool {
-        if buffer.len() != arr.len() {
-            return false;
-        }
-
-        for (i, elem) in arr.iter().enumerate().take(buffer.len()) {
-            if !approx_equal(*buffer.get(i).unwrap(), *elem, 1e-6) {
-                return false;
-            }
-        }
-
-        true
-    }
 
     #[test]
     fn init_to_zero() {
         let weights = FilterWeights::new(NonZero::new(3).unwrap(), 0.0, 0.5, 1e-4).unwrap();
         let buffer = SampleBuffer::new(&weights);
 
-        assert!(same_elements(&buffer, &[0_f64; 3]));
+        assert!(all_approx_equal(buffer.iter(), [0_f64; 3].iter()));
     }
 
     #[test]
@@ -105,11 +96,11 @@ mod tests {
 
         buffer.push(1.0);
         assert_eq!(buffer.len(), 3);
-        assert!(same_elements(&buffer, &[0.0, 0.0, 1.0]));
+        assert!(all_approx_equal(buffer.iter(), [0.0, 0.0, 1.0].iter()));
 
         buffer.push(2.0);
         assert_eq!(buffer.len(), 3);
-        assert!(same_elements(&buffer, &[0.0, 1.0, 2.0]));
+        assert!(all_approx_equal(buffer.iter(), [0.0, 1.0, 2.0].iter()));
     }
 
     #[test]
@@ -121,12 +112,12 @@ mod tests {
         buffer.push(3.0);
 
         assert_eq!(buffer.len(), 3);
-        assert!(same_elements(&buffer, &[1.0, 2.0, 3.0]));
+        assert!(all_approx_equal(buffer.iter(), [1.0, 2.0, 3.0].iter()));
 
         buffer.push(4.0);
 
         assert_eq!(buffer.len(), 3);
-        assert!(same_elements(&buffer, &[2.0, 3.0, 4.0]));
+        assert!(all_approx_equal(buffer.iter(), [2.0, 3.0, 4.0].iter()));
     }
 
     #[test]

@@ -63,7 +63,7 @@ mod tests {
             FilterWeights::new(NonZero::new(WINDOW_SIZE).unwrap(), 0.0, 0.5, 1e-4).unwrap();
 
         assert_eq!(WINDOW_SIZE, weights.len());
-        assert!(!all_approx_equal(&weights, &[0.0; WINDOW_SIZE]));
+        assert!(!all_approx_equal(weights.iter(), [0.0; WINDOW_SIZE].iter()));
     }
 
     #[test]
@@ -72,6 +72,6 @@ mod tests {
         let weights = FilterWeights::zeros(NonZero::new(WINDOW_SIZE).unwrap());
 
         assert_eq!(WINDOW_SIZE, weights.len());
-        assert!(all_approx_equal(&weights, &[0.0; WINDOW_SIZE]));
+        assert!(all_approx_equal(weights.iter(), [0.0; WINDOW_SIZE].iter()));
     }
 }
