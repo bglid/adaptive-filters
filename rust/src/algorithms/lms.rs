@@ -1,4 +1,4 @@
-use crate::filters::SampleBuffer;
+use crate::types::SampleBuffer;
 
 use crate::algorithms::Algorithm;
 

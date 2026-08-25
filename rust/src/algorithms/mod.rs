@@ -1,4 +1,4 @@
-use crate::filters::SampleBuffer;
+use crate::types::SampleBuffer;
 
 mod lms;
 pub use lms::LeastMeanSquares;

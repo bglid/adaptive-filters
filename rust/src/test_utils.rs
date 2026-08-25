@@ -7,8 +7,7 @@
 
 use std::num::NonZero;
 
-use crate::filters::FilterWeights;
-use crate::filters::SampleBuffer;
+use crate::types::{FilterWeights, SampleBuffer};
 
 pub fn approx_equal(a: f64, b: f64, eps: f64) -> bool {
     (a - b).abs() < eps

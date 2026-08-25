@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::num::{NonZero, NonZeroUsize};
 
-use crate::filters::FilterWeights;
+use crate::types::FilterWeights;
 
 // Fixed-size ring buffer for processing samples.
 // Functions must ensure that samples.len() is the same before and after function calls

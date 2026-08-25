@@ -2,8 +2,7 @@ use std::num::NonZero;
 
 use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
-use crate::filters::SampleBuffer;
-use crate::filters::weights::FilterWeights;
+use crate::types::{FilterWeights, SampleBuffer};
 
 // TODO: make f64 generic
 
