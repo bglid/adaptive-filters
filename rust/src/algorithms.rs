@@ -22,14 +22,13 @@ impl Algorithm for LeastMeanSquares {
 #[allow(clippy::unwrap_used, clippy::indexing_slicing, reason = "Tests")]
 mod tests {
     use super::*;
-    use crate::sample_buffer::SampleBuffer;
-    use crate::test_utils::approx_equal;
+    use crate::test_utils::{approx_equal, sample_buffer_from};
 
     #[test]
     fn update_lms_1() {
         let lms = LeastMeanSquares { mu: 0.5 };
         let e_n = 2.0;
-        let x_n = SampleBuffer::from(&[1.0, -1.0]).unwrap();
+        let x_n = sample_buffer_from(&[1.0, -1.0]);
         let expected = [1.0, -1.0];
         let mut weights = [0.0, 0.0];
 
@@ -46,7 +45,7 @@ mod tests {
     fn update_lms_2() {
         let lms = LeastMeanSquares { mu: 1.0 };
         let e_n = 1.0;
-        let x_n = SampleBuffer::from(&[5.0, 2.0]).unwrap();
+        let x_n = sample_buffer_from(&[5.0, 2.0]);
         let expected = [5.0, 2.0];
         let mut weights = [0.0, 0.0];
 
@@ -63,7 +62,7 @@ mod tests {
     fn update_lms_3() {
         let lms = LeastMeanSquares { mu: -1.0 };
         let e_n = 1.0;
-        let x_n = SampleBuffer::from(&[0.5, 0.25]).unwrap();
+        let x_n = sample_buffer_from(&[0.5, 0.25]);
         let expected = [-0.5, -0.25];
         let mut weights = [0.0, 0.0];
 

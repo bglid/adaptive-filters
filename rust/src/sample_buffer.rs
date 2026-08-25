@@ -20,20 +20,6 @@ impl SampleBuffer {
         }
     }
 
-    #[allow(
-        unused,
-        reason = "Used by some tests, and may be useful in the future, e.g. for block processing"
-    )]
-    // TODO: remove this because it creates a buffer of arbitrary length
-    pub fn from(arr: &[f64]) -> Option<Self> {
-        let capacity = NonZero::new(arr.len())?;
-        let buff = SampleBuffer {
-            samples: arr.iter().copied().collect(),
-            capacity,
-        };
-        Some(buff)
-    }
-
     pub fn push(&mut self, sample: f64) {
         if self.samples.len() == self.capacity.into() {
             self.samples.pop_front();
@@ -75,7 +61,7 @@ impl<'a> Iterator for SampleIter<'a> {
 #[allow(clippy::unwrap_used, clippy::indexing_slicing, reason = "Tests")]
 mod tests {
     use super::*;
-    use crate::test_utils::approx_equal;
+    use crate::test_utils::{approx_equal, sample_buffer_from};
     use std::num::NonZero;
 
     fn same_elements(buffer: &SampleBuffer, arr: &[f64]) -> bool {
@@ -102,7 +88,7 @@ mod tests {
 
     #[test]
     fn push() {
-        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
+        let mut buffer = sample_buffer_from(&[0.0; 3]);
 
         buffer.push(1.0);
         assert_eq!(buffer.len(), 3);
@@ -115,7 +101,7 @@ mod tests {
 
     #[test]
     fn buffer_size_invariant() {
-        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
+        let mut buffer = sample_buffer_from(&[0.0; 3]);
 
         buffer.push(1.0);
         buffer.push(2.0);
@@ -132,7 +118,7 @@ mod tests {
 
     #[test]
     fn get() {
-        let mut buffer = SampleBuffer::from(&[0.0; 3]).unwrap();
+        let mut buffer = sample_buffer_from(&[0.0; 3]);
 
         buffer.push(1.0);
         buffer.push(2.0);

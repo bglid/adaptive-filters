@@ -113,6 +113,17 @@ impl FilterWeights {
 
         Some(FilterWeights { weights })
     }
+
+    // TODO: from_distribution() ?
+
+    // mostly used for testing functions
+    pub fn zeros(window_size: NonZeroUsize) -> Self {
+        FilterWeights {
+            weights: std::iter::repeat_n(0.0, window_size.into())
+                .collect::<Vec<f64>>()
+                .into_boxed_slice(),
+        }
+    }
 }
 impl Deref for FilterWeights {
     type Target = Box<[f64]>;
@@ -131,7 +142,7 @@ impl DerefMut for FilterWeights {
 mod tests {
     use super::*;
 
-    use crate::test_utils::approx_equal;
+    use crate::test_utils::{all_approx_equal, approx_equal, sample_buffer_from};
 
     struct TestAlgorithm;
     impl Algorithm for TestAlgorithm {
@@ -154,7 +165,7 @@ mod tests {
     fn estimate_noise() {
         let filter = testing_filter();
 
-        let x_n = SampleBuffer::from(&[2.0, 3.0, 4.0]).unwrap();
+        let x_n = sample_buffer_from(&[2.0, 3.0, 4.0]);
 
         let res = filter.estimate_noise(&x_n);
         assert!(approx_equal(res, -2.0, 1e-6));
@@ -186,6 +197,25 @@ mod tests {
             .zip(weights_before.iter())
             .all(|(a, b)| approx_equal(*a, *b, 1e-6));
         assert!(!same_weights);
+    }
+
+    #[test]
+    fn filter_weights_init() {
+        const WINDOW_SIZE: usize = 1024;
+        let weights =
+            FilterWeights::new(NonZero::new(WINDOW_SIZE).unwrap(), 0.0, 0.5, 1e-4).unwrap();
+
+        assert_eq!(WINDOW_SIZE, weights.len());
+        assert!(!all_approx_equal(&weights, &[0.0; WINDOW_SIZE]));
+    }
+
+    #[test]
+    fn filter_weights_zero() {
+        const WINDOW_SIZE: usize = 1024;
+        let weights = FilterWeights::zeros(NonZero::new(WINDOW_SIZE).unwrap());
+
+        assert_eq!(WINDOW_SIZE, weights.len());
+        assert!(all_approx_equal(&weights, &[0.0; WINDOW_SIZE]));
     }
 
     #[test]
