@@ -30,7 +30,7 @@ impl<A: Algorithm> FilterBase<A> {
 
     #[allow(clippy::missing_errors_doc, reason = "TODO")]
     pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        Self::check_signal_lengths(input_signal, noise_ref)?;
+        check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
 
@@ -40,7 +40,7 @@ impl<A: Algorithm> FilterBase<A> {
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths() (putting this in a comment so fmt doesn't split lines)
             #[allow(clippy::indexing_slicing, reason = "Bounds checked")]
-            let error = self.process_sample(input_signal[n], noise_ref[n], &mut noise_ref_buffer);
+            let error = self.process_sample(&mut noise_ref_buffer, input_signal[n], noise_ref[n]);
 
             cleaned_signal.push(error);
 
@@ -53,7 +53,7 @@ impl<A: Algorithm> FilterBase<A> {
 
     #[allow(clippy::missing_errors_doc, reason = "TODO")]
     pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        Self::check_signal_lengths(input_signal, noise_ref)?;
+        check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
 
@@ -63,7 +63,7 @@ impl<A: Algorithm> FilterBase<A> {
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths()
             #[allow(clippy::indexing_slicing, reason = "Bounds checked")]
-            let error = self.process_sample(input_signal[n], noise_ref[n], &mut noise_ref_buffer);
+            let error = self.process_sample(&mut noise_ref_buffer, input_signal[n], noise_ref[n]);
 
             cleaned_signal.push(error);
         }
@@ -73,41 +73,37 @@ impl<A: Algorithm> FilterBase<A> {
 
     fn process_sample(
         &self,
+        noise_ref_buffer: &mut SampleBuffer,
         input_sample: f64,
         noise_sample: f64,
-        noise_ref_buffer: &mut SampleBuffer,
     ) -> f64 {
         noise_ref_buffer.push(noise_sample);
 
-        let noise_estimate = self.estimate_noise(noise_ref_buffer);
+        let noise_estimate = estimate_noise(&self.weights, noise_ref_buffer);
 
-        Self::error(input_sample, noise_estimate)
+        compute_error(input_sample, noise_estimate)
     }
+}
 
-    fn check_signal_lengths(input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<()> {
-        if noise_ref.is_empty() || input_signal.is_empty() {
-            Err(FilterError::EmptyInputArr)
-        } else if noise_ref.len() < input_signal.len() {
-            Err(FilterError::NoiseRefTooShort {
-                input_len: input_signal.len(),
-                noise_len: noise_ref.len(),
-            })
-        } else {
-            Ok(())
-        }
-    }
+fn estimate_noise(weights: &FilterWeights, x_n: &SampleBuffer) -> f64 {
+    // SampleBuffer is initiated with the same length as weights, therefore we don't need to check
+    weights.iter().zip(x_n.iter()).map(|(w, x)| w * x).sum()
+}
 
-    fn estimate_noise(&self, x_n: &SampleBuffer) -> f64 {
-        // SampleBuffer is initiated with the same length as weights, therefore we don't need to check
-        self.weights
-            .iter()
-            .zip(x_n.iter())
-            .map(|(w, x)| w * x)
-            .sum()
-    }
+fn compute_error(input_sample: f64, noise_estimate: f64) -> f64 {
+    input_sample - noise_estimate
+}
 
-    fn error(input_sample: f64, noise_estimate: f64) -> f64 {
-        input_sample - noise_estimate
+fn check_signal_lengths(input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<()> {
+    if noise_ref.is_empty() || input_signal.is_empty() {
+        Err(FilterError::EmptyInputArr)
+    } else if noise_ref.len() < input_signal.len() {
+        Err(FilterError::NoiseRefTooShort {
+            input_len: input_signal.len(),
+            noise_len: noise_ref.len(),
+        })
+    } else {
+        Ok(())
     }
 }
 
@@ -139,22 +135,18 @@ mod tests {
     }
 
     #[test]
-    fn estimate_noise() {
+    fn estimate_noise_works() {
         let filter = testing_filter();
 
         let x_n = sample_buffer_from(&[2.0, 3.0, 4.0]);
 
-        let res = filter.estimate_noise(&x_n);
+        let res = estimate_noise(&filter.weights, &x_n);
         assert!(approx_equal(res, -2.0, 1e-6));
     }
 
     #[test]
-    fn error() {
-        assert!(approx_equal(
-            FilterBase::<TestAlgorithm>::error(5.0, 3.5),
-            1.5,
-            1e-6
-        ));
+    fn compute_error_works() {
+        assert!(approx_equal(compute_error(5.0, 3.5), 1.5, 1e-6));
     }
 
     #[test]
