@@ -157,9 +157,9 @@ mod tests {
 
     struct TestAlgorithm;
     impl Algorithm for TestAlgorithm {
-        fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
+        fn update_step(&self, weights: &mut [f64], error: f64, noise_ref: &SampleBuffer) {
             for (i, w) in weights.iter_mut().enumerate() {
-                *w += e_n * x_n.get(i).unwrap();
+                *w += error * noise_ref.get(i).unwrap();
             }
         }
     }

@@ -8,9 +8,9 @@ pub struct LeastMeanSquares {
     pub mu: f64,
 }
 impl Algorithm for LeastMeanSquares {
-    fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
-        for (w, x) in weights.iter_mut().zip(x_n.iter()) {
-            *w += self.mu * e_n * x;
+    fn update_step(&self, weights: &mut [f64], error: f64, noise_ref: &SampleBuffer) {
+        for (w, x) in weights.iter_mut().zip(noise_ref.iter()) {
+            *w += self.mu * error * x;
         }
     }
 }

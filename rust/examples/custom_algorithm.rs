@@ -11,14 +11,15 @@ pub struct MyAlgorithm {
 // Implement the Algorithm trait so the algorithm can be used with FilterBase
 impl Algorithm for MyAlgorithm {
     // This function is called every iteration during adaptation to update the weights
-    fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
-        for (w, x) in weights.iter_mut().zip(x_n.iter()) {
-            *w += self.alpha * e_n * x;
+    fn update_step(&self, weights: &mut [f64], error: f64, noise_ref: &SampleBuffer) {
+        for (w, x) in weights.iter_mut().zip(noise_ref.iter()) {
+            *w += self.alpha * error * x;
         }
     }
 }
 
 fn main() {
+    // Sample inputs
     let input_signal = [1.0, -2.5, 3.0];
     let noise_ref = [2.0, -1.2, -3.8];
 
