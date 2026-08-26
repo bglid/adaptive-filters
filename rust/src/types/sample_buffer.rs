@@ -3,13 +3,14 @@ use std::num::{NonZero, NonZeroUsize};
 
 use crate::types::FilterWeights;
 
-// Fixed-size ring buffer for processing samples.
-// Functions must ensure that samples.len() is the same before and after function calls
-// to enforce the invariant weights.len() == buffer.len() == window_size
+/// Fixed-size ring buffer for processing samples.
+/// Functions must ensure that `samples.len()` is the same before and after function calls
+/// to enforce the invariant it is the same as the number of weights, and equal to the filter's window size.
 #[allow(
     clippy::len_without_is_empty,
     reason = "Buffer has a fixed size and can't be empty"
 )]
+#[derive(Debug, Clone)]
 pub struct SampleBuffer {
     samples: VecDeque<f64>,
     capacity: NonZeroUsize,

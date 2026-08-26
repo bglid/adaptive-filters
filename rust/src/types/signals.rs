@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use crate::errors::{FilterError, FilterResult};
 
+#[derive(Debug, Clone)]
 pub struct InputSignal<'a>(&'a [f64]);
 impl Deref for InputSignal<'_> {
     type Target = [f64];
@@ -31,6 +32,7 @@ impl Deref for InputSample {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct NoiseReference<'a>(&'a [f64]);
 impl Deref for NoiseReference<'_> {
     type Target = [f64];

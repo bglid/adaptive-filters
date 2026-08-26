@@ -8,12 +8,19 @@ use crate::types::{
 
 // TODO: make f64 generic
 
+/// Underlying, algorithm-agnostic filter implementation.
+///
+/// Typically, it's more convenient to use an alias like `LMSFilter` over its equivalent `FilterBase<LeastMeanSquares>`.
+/// As such, `FilterBase` is mainly recommended for use with custom algorithms.
+#[derive(Debug, Clone)]
 pub struct FilterBase<A: Algorithm> {
     algorithm: A,
     weights: FilterWeights,
     window_size: NonZeroUsize,
 }
 impl<A: Algorithm> FilterBase<A> {
+    /// Initializes a filter using the provided algorithm configuration and window size.
+    /// The weights are samples from a normal distribution with $\mu = 0.0 and $\sigma$ = 5e-5.
     pub fn new(algorithm: A, window_size: usize) -> Option<Self> {
         let window_size = NonZero::new(window_size)?;
 
@@ -26,11 +33,38 @@ impl<A: Algorithm> FilterBase<A> {
         })
     }
 
+    // TODO: FilterBase::default()
+
+    /// Returns the filter's window size. This number is equal to the number of weights.
     pub fn window_size(&self) -> usize {
         self.window_size.into()
     }
 
-    #[allow(clippy::missing_errors_doc, reason = "TODO")]
+    /// Iteratively adapts the filter to the input signal and noise reference
+    /// using the chosen algorithm, and returns the denoised signal.
+    ///
+    /// Since adaptation is performed "on-the-fly", the output signal will start noisy
+    /// and become less so over time. In order to fully denoise a signal, call `adapt()`
+    /// to adapt the filter offline, then call `filter()` to denoise the signal with fixed
+    /// weights.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut filter = LMSFilter::default() // TODO: implement default()
+    ///
+    /// // On-the-fly adaptation
+    /// let denoised_otf = filter.adapt(&input_signal, &noise_ref).unwrap();
+    ///
+    /// // Apply the learned filter
+    /// let denoised_offline = filter.filter(&input_signal, &noise_ref).unwrap();
+    ///
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if `input_signal` or `noise_ref` are empty,
+    /// or if `input_signal.len() > noise_ref.len()`.
     pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
         let input_signal = InputSignal::new(input_signal)?;
         let noise_ref = NoiseReference::new(noise_ref)?;
@@ -60,7 +94,23 @@ impl<A: Algorithm> FilterBase<A> {
         Ok(cleaned_signal)
     }
 
-    #[allow(clippy::missing_errors_doc, reason = "TODO")]
+    /// Applies the filter to the input signal without updating the filter coefficients.
+    /// This method should be called after adapting the filter to the inputs using `adapt()`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut filter = LMSFilter::default() // TODO: implement default()
+    ///
+    /// // For offline adaptation, the output of `adapt()` can be discarded.
+    /// let _ = filter.adapt(&input_signal, &noise_ref).unwrap();
+    /// let denoised = filter.filter(&input_signal, &noise_ref).unwrap();
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if `input_signal` or `noise_ref` are empty,
+    /// or if `input_signal.len() > noise_ref.len()`.
     pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
         let input_signal = InputSignal::new(input_signal)?;
         let noise_ref = NoiseReference::new(noise_ref)?;

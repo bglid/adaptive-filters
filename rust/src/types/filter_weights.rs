@@ -2,6 +2,7 @@ use rand_distr::{Distribution as _, Normal};
 use std::num::NonZeroUsize;
 use std::ops::{Deref, DerefMut};
 
+#[derive(Debug, Clone)]
 pub struct FilterWeights {
     weights: Box<[f64]>, // We use a boxed slice instead of a Vec to ensure length doesn't change
 }

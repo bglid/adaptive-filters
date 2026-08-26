@@ -2,8 +2,10 @@ use crate::types::SampleBuffer;
 
 use crate::algorithms::Algorithm;
 
+#[derive(Debug, Clone)]
+#[allow(clippy::exhaustive_structs, reason = "No more fields have to be added")]
 pub struct LeastMeanSquares {
-    mu: f64,
+    pub mu: f64,
 }
 impl Algorithm for LeastMeanSquares {
     fn update_step(&self, weights: &mut [f64], e_n: f64, x_n: &SampleBuffer) {
