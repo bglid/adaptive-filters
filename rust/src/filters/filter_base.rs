@@ -42,16 +42,13 @@ impl<A: Algorithm> FilterBase<A> {
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
 
         for n in 0..n_samples {
-            // We set n_samples = input_signal.len() and called check_signal_lengths()
-            #[allow(
-                clippy::unwrap_used,
-                clippy::missing_panics_doc,
-                reason = "Bounds checked"
-            )]
+            // We set n_samples = input_signal.len() and called check_signal_lengths() (putting in comment so fmt doesn't split lines)
+            #[allow(clippy::unwrap_used, reason = "Bounds checked")]
+            #[allow(clippy::missing_panics_doc, reason = "Bounds checked")]
             let error = self.process_sample(
                 &mut noise_ref_buffer,
-                input_signal.get(n).unwrap(),
-                noise_ref.get(n).unwrap(),
+                input_signal.get_sample(n).unwrap(),
+                noise_ref.get_sample(n).unwrap(),
             );
 
             cleaned_signal.push(error);
@@ -76,15 +73,12 @@ impl<A: Algorithm> FilterBase<A> {
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths()
-            #[allow(
-                clippy::unwrap_used,
-                clippy::missing_panics_doc,
-                reason = "Bounds checked"
-            )]
+            #[allow(clippy::unwrap_used, reason = "Bounds checked")]
+            #[allow(clippy::missing_panics_doc, reason = "Bounds checked")]
             let error = self.process_sample(
                 &mut noise_ref_buffer,
-                input_signal.get(n).unwrap(),
-                noise_ref.get(n).unwrap(),
+                input_signal.get_sample(n).unwrap(),
+                noise_ref.get_sample(n).unwrap(),
             );
 
             cleaned_signal.push(error);
