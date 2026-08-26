@@ -2,7 +2,9 @@ use std::num::{NonZero, NonZeroUsize};
 
 use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
-use crate::types::{FilterWeights, SampleBuffer};
+use crate::types::{
+    FilterWeights, InputSample, InputSignal, NoiseReference, NoiseSample, SampleBuffer,
+};
 
 // TODO: make f64 generic
 
@@ -30,7 +32,9 @@ impl<A: Algorithm> FilterBase<A> {
 
     #[allow(clippy::missing_errors_doc, reason = "TODO")]
     pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        check_signal_lengths(input_signal, noise_ref)?;
+        let input_signal = InputSignal::new(input_signal)?;
+        let noise_ref = NoiseReference::new(noise_ref)?;
+        check_signal_lengths(&input_signal, &noise_ref)?;
 
         let n_samples = input_signal.len();
 
@@ -38,9 +42,17 @@ impl<A: Algorithm> FilterBase<A> {
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
 
         for n in 0..n_samples {
-            // We set n_samples = input_signal.len() and called check_signal_lengths() (putting this in a comment so fmt doesn't split lines)
-            #[allow(clippy::indexing_slicing, reason = "Bounds checked")]
-            let error = self.process_sample(&mut noise_ref_buffer, input_signal[n], noise_ref[n]);
+            // We set n_samples = input_signal.len() and called check_signal_lengths()
+            #[allow(
+                clippy::unwrap_used,
+                clippy::missing_panics_doc,
+                reason = "Bounds checked"
+            )]
+            let error = self.process_sample(
+                &mut noise_ref_buffer,
+                input_signal.get(n).unwrap(),
+                noise_ref.get(n).unwrap(),
+            );
 
             cleaned_signal.push(error);
 
@@ -53,7 +65,9 @@ impl<A: Algorithm> FilterBase<A> {
 
     #[allow(clippy::missing_errors_doc, reason = "TODO")]
     pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        check_signal_lengths(input_signal, noise_ref)?;
+        let input_signal = InputSignal::new(input_signal)?;
+        let noise_ref = NoiseReference::new(noise_ref)?;
+        check_signal_lengths(&input_signal, &noise_ref)?;
 
         let n_samples = input_signal.len();
 
@@ -62,8 +76,16 @@ impl<A: Algorithm> FilterBase<A> {
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths()
-            #[allow(clippy::indexing_slicing, reason = "Bounds checked")]
-            let error = self.process_sample(&mut noise_ref_buffer, input_signal[n], noise_ref[n]);
+            #[allow(
+                clippy::unwrap_used,
+                clippy::missing_panics_doc,
+                reason = "Bounds checked"
+            )]
+            let error = self.process_sample(
+                &mut noise_ref_buffer,
+                input_signal.get(n).unwrap(),
+                noise_ref.get(n).unwrap(),
+            );
 
             cleaned_signal.push(error);
         }
@@ -74,14 +96,14 @@ impl<A: Algorithm> FilterBase<A> {
     fn process_sample(
         &self,
         noise_ref_buffer: &mut SampleBuffer,
-        input_sample: f64,
-        noise_sample: f64,
+        input_sample: InputSample,
+        noise_sample: NoiseSample,
     ) -> f64 {
-        noise_ref_buffer.push(noise_sample);
+        noise_ref_buffer.push(*noise_sample);
 
         let noise_estimate = estimate_noise(&self.weights, noise_ref_buffer);
 
-        compute_error(input_sample, noise_estimate)
+        compute_error(*input_sample, noise_estimate)
     }
 }
 
@@ -95,9 +117,7 @@ fn compute_error(input_sample: f64, noise_estimate: f64) -> f64 {
 }
 
 fn check_signal_lengths(input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<()> {
-    if noise_ref.is_empty() || input_signal.is_empty() {
-        Err(FilterError::EmptyInputArr)
-    } else if noise_ref.len() < input_signal.len() {
+    if noise_ref.len() < input_signal.len() {
         Err(FilterError::NoiseRefTooShort {
             input_len: input_signal.len(),
             noise_len: noise_ref.len(),
@@ -207,10 +227,15 @@ mod tests {
 
         filter.adapt(&input, &noise).unwrap();
 
+        // This should return EmptyInputArr, not NoiseRefTooShort,
+        // because otherwise it might suggest that a noise ref of length 0 is valid.
+        // Therefore, the code should check first that the signals aren't empty
+        // THEN check that input length < noise length.
         assert!(matches!(
             filter.adapt(&input, &[]),
             Err(FilterError::EmptyInputArr)
         ));
+
         assert!(matches!(
             filter.adapt(&[], &noise),
             Err(FilterError::EmptyInputArr)
@@ -226,6 +251,7 @@ mod tests {
             filter.filter(&input, &[]),
             Err(FilterError::EmptyInputArr)
         ));
+
         assert!(matches!(
             filter.filter(&[], &noise),
             Err(FilterError::EmptyInputArr)
