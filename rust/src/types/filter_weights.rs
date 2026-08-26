@@ -8,12 +8,7 @@ pub struct FilterWeights {
 }
 impl FilterWeights {
     // TODO: rename to from_normal_dist()? or just use default() with from_distribution()
-    pub fn new(
-        window_size: NonZeroUsize,
-        mean: f64,
-        std_dev: f64,
-        scaling_factor: f64,
-    ) -> Option<Self> {
+    pub fn new(window_size: NonZeroUsize, mean: f64, std_dev: f64) -> Option<Self> {
         let mut rng = rand::rng();
 
         let normal_dist = Normal::new(mean, std_dev).ok()?;
@@ -21,7 +16,6 @@ impl FilterWeights {
         let weights = normal_dist
             .sample_iter(&mut rng)
             .take(window_size.into())
-            .map(|w| w * scaling_factor)
             .collect::<Vec<f64>>()
             .into_boxed_slice();
 
@@ -61,8 +55,7 @@ mod tests {
     #[test]
     fn filter_weights_init() {
         const WINDOW_SIZE: usize = 1024;
-        let weights =
-            FilterWeights::new(NonZero::new(WINDOW_SIZE).unwrap(), 0.0, 0.5, 1e-4).unwrap();
+        let weights = FilterWeights::new(NonZero::new(WINDOW_SIZE).unwrap(), 0.0, 5e-5).unwrap();
 
         assert_eq!(WINDOW_SIZE, weights.len());
         assert!(!all_approx_equal(weights.iter(), [0.0; WINDOW_SIZE].iter()));

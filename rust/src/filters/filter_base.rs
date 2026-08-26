@@ -24,7 +24,7 @@ impl<A: Algorithm> FilterBase<A> {
     pub fn new(algorithm: A, window_size: usize) -> Option<Self> {
         let window_size = NonZero::new(window_size)?;
 
-        let weights = FilterWeights::new(window_size, 0.0, 0.5, 1e-4)?;
+        let weights = FilterWeights::new(window_size, 0.0, 5e-5)?;
 
         Some(FilterBase {
             algorithm,
@@ -47,19 +47,6 @@ impl<A: Algorithm> FilterBase<A> {
     /// and become less so over time. In order to fully denoise a signal, call `adapt()`
     /// to adapt the filter offline, then call `filter()` to denoise the signal with fixed
     /// weights.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut filter = LMSFilter::default() // TODO: implement default()
-    ///
-    /// // On-the-fly adaptation
-    /// let denoised_otf = filter.adapt(&input_signal, &noise_ref).unwrap();
-    ///
-    /// // Apply the learned filter
-    /// let denoised_offline = filter.filter(&input_signal, &noise_ref).unwrap();
-    ///
-    /// ```
     ///
     /// # Errors
     ///
@@ -96,16 +83,6 @@ impl<A: Algorithm> FilterBase<A> {
 
     /// Applies the filter to the input signal without updating the filter coefficients.
     /// This method should be called after adapting the filter to the inputs using `adapt()`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut filter = LMSFilter::default() // TODO: implement default()
-    ///
-    /// // For offline adaptation, the output of `adapt()` can be discarded.
-    /// let _ = filter.adapt(&input_signal, &noise_ref).unwrap();
-    /// let denoised = filter.filter(&input_signal, &noise_ref).unwrap();
-    /// ```
     ///
     /// # Errors
     ///

@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn init_to_zero() {
-        let weights = FilterWeights::new(NonZero::new(3).unwrap(), 0.0, 0.5, 1e-4).unwrap();
+        let weights = FilterWeights::new(NonZero::new(3).unwrap(), 0.0, 5e-5).unwrap();
         let buffer = SampleBuffer::new(&weights);
 
         assert!(all_approx_equal(buffer.iter(), [0_f64; 3].iter()));
