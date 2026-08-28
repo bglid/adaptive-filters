@@ -72,6 +72,28 @@ impl Deref for NoiseEstimate {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct OutputSignal(Vec<f64>);
+impl OutputSignal {
+    pub fn new(input_signal: &InputSignal) -> Self {
+        OutputSignal(Vec::with_capacity(input_signal.len()))
+    }
+
+    pub fn push(&mut self, error: OutputSample) {
+        self.0.push(*error);
+    }
+
+    pub fn into_inner(self) -> Vec<f64> {
+        self.0
+    }
+}
+impl Deref for OutputSignal {
+    type Target = Vec<f64>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 #[allow(clippy::exhaustive_structs, reason = "Simple wrapper")]
 pub struct OutputSample(pub f64);

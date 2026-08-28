@@ -4,7 +4,7 @@ use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
 use crate::types::{
     FilterWeights, InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample,
-    OutputSample, SampleBuffer,
+    OutputSample, OutputSignal, SampleBuffer,
 };
 
 // TODO: make f64 generic
@@ -34,7 +34,7 @@ impl<A: Algorithm> FilterBase<A> {
         })
     }
 
-    // TODO: FilterBase::default()
+    // TODO: Impl Default
 
     /// Returns the filter's window size. This number is equal to the number of weights.
     pub fn window_size(&self) -> usize {
@@ -60,8 +60,8 @@ impl<A: Algorithm> FilterBase<A> {
 
         let n_samples = input_signal.len();
 
-        let mut cleaned_signal = Vec::<f64>::with_capacity(n_samples);
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
+        let mut cleaned_signal = OutputSignal::new(&input_signal);
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths() (putting in comment so fmt doesn't split lines)
@@ -73,13 +73,13 @@ impl<A: Algorithm> FilterBase<A> {
                 noise_ref.get_sample(n).unwrap(),
             );
 
-            cleaned_signal.push(*error);
+            cleaned_signal.push(error);
 
             self.algorithm
                 .update_step(&mut self.weights, error, &noise_ref_buffer);
         }
 
-        Ok(cleaned_signal)
+        Ok(cleaned_signal.into_inner())
     }
 
     /// Applies the filter to the input signal without updating the filter coefficients.
@@ -96,8 +96,8 @@ impl<A: Algorithm> FilterBase<A> {
 
         let n_samples = input_signal.len();
 
-        let mut cleaned_signal = Vec::<f64>::with_capacity(n_samples);
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
+        let mut cleaned_signal = OutputSignal::new(&input_signal);
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths()
@@ -109,10 +109,10 @@ impl<A: Algorithm> FilterBase<A> {
                 noise_ref.get_sample(n).unwrap(),
             );
 
-            cleaned_signal.push(*error);
+            cleaned_signal.push(error);
         }
 
-        Ok(cleaned_signal)
+        Ok(cleaned_signal.into_inner())
     }
 
     fn process_sample(
