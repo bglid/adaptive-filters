@@ -1,8 +1,8 @@
 #![allow(clippy::unwrap_used, clippy::exhaustive_structs, reason = "Examples")]
 
-use adaptive_filters::SampleBuffer;
 use adaptive_filters::algorithms::Algorithm;
 use adaptive_filters::filters::FilterBase;
+use adaptive_filters::{OutputSample, SampleBuffer};
 
 // Create a struct to hold any required parameters or state
 pub struct MyAlgorithm {
@@ -11,9 +11,9 @@ pub struct MyAlgorithm {
 // Implement the Algorithm trait so the algorithm can be used with FilterBase
 impl Algorithm for MyAlgorithm {
     // This function is called every iteration during adaptation to update the weights
-    fn update_step(&self, weights: &mut [f64], error: f64, noise_ref: &SampleBuffer) {
+    fn update_step(&self, weights: &mut [f64], error: OutputSample, noise_ref: &SampleBuffer) {
         for (w, x) in weights.iter_mut().zip(noise_ref.iter()) {
-            *w += self.alpha * error * x;
+            *w += self.alpha * (*error) * x;
         }
     }
 }

@@ -24,7 +24,7 @@ impl<'a> InputSignal<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct InputSample(f64);
+pub struct InputSample(pub f64);
 impl Deref for InputSample {
     type Target = f64;
     fn deref(&self) -> &Self::Target {
@@ -55,8 +55,27 @@ impl<'a> NoiseReference<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct NoiseSample(f64);
+pub struct NoiseSample(pub f64);
 impl Deref for NoiseSample {
+    type Target = f64;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct NoiseEstimate(pub f64);
+impl Deref for NoiseEstimate {
+    type Target = f64;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+#[allow(clippy::exhaustive_structs, reason = "Simple wrapper")]
+pub struct OutputSample(pub f64);
+impl Deref for OutputSample {
     type Target = f64;
     fn deref(&self) -> &Self::Target {
         &self.0

@@ -3,7 +3,8 @@ use std::num::{NonZero, NonZeroUsize};
 use crate::algorithms::Algorithm;
 use crate::errors::{FilterError, FilterResult};
 use crate::types::{
-    FilterWeights, InputSample, InputSignal, NoiseReference, NoiseSample, SampleBuffer,
+    FilterWeights, InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample,
+    OutputSample, SampleBuffer,
 };
 
 // TODO: make f64 generic
@@ -72,7 +73,7 @@ impl<A: Algorithm> FilterBase<A> {
                 noise_ref.get_sample(n).unwrap(),
             );
 
-            cleaned_signal.push(error);
+            cleaned_signal.push(*error);
 
             self.algorithm
                 .update_step(&mut self.weights, error, &noise_ref_buffer);
@@ -108,7 +109,7 @@ impl<A: Algorithm> FilterBase<A> {
                 noise_ref.get_sample(n).unwrap(),
             );
 
-            cleaned_signal.push(error);
+            cleaned_signal.push(*error);
         }
 
         Ok(cleaned_signal)
@@ -119,25 +120,28 @@ impl<A: Algorithm> FilterBase<A> {
         noise_ref_buffer: &mut SampleBuffer,
         input_sample: InputSample,
         noise_sample: NoiseSample,
-    ) -> f64 {
+    ) -> OutputSample {
         noise_ref_buffer.push(*noise_sample);
 
         let noise_estimate = estimate_noise(&self.weights, noise_ref_buffer);
 
-        compute_error(*input_sample, noise_estimate)
+        compute_error(input_sample, noise_estimate)
     }
 }
 
-fn estimate_noise(weights: &FilterWeights, x_n: &SampleBuffer) -> f64 {
+fn estimate_noise(weights: &FilterWeights, x_n: &SampleBuffer) -> NoiseEstimate {
     // SampleBuffer is initiated with the same length as weights, therefore we don't need to check
-    weights.iter().zip(x_n.iter()).map(|(w, x)| w * x).sum()
+    NoiseEstimate(weights.iter().zip(x_n.iter()).map(|(w, x)| w * x).sum())
 }
 
-fn compute_error(input_sample: f64, noise_estimate: f64) -> f64 {
-    input_sample - noise_estimate
+fn compute_error(input_sample: InputSample, noise_estimate: NoiseEstimate) -> OutputSample {
+    OutputSample(*input_sample - *noise_estimate)
 }
 
-fn check_signal_lengths(input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<()> {
+fn check_signal_lengths(
+    input_signal: &InputSignal,
+    noise_ref: &NoiseReference,
+) -> FilterResult<()> {
     if noise_ref.len() < input_signal.len() {
         Err(FilterError::NoiseRefTooShort {
             input_len: input_signal.len(),
@@ -157,9 +161,9 @@ mod tests {
 
     struct TestAlgorithm;
     impl Algorithm for TestAlgorithm {
-        fn update_step(&self, weights: &mut [f64], error: f64, noise_ref: &SampleBuffer) {
+        fn update_step(&self, weights: &mut [f64], error: OutputSample, noise_ref: &SampleBuffer) {
             for (i, w) in weights.iter_mut().enumerate() {
-                *w += error * noise_ref.get(i).unwrap();
+                *w += (*error) * noise_ref.get(i).unwrap();
             }
         }
     }
@@ -182,12 +186,16 @@ mod tests {
         let x_n = sample_buffer_from(&[2.0, 3.0, 4.0]);
 
         let res = estimate_noise(&filter.weights, &x_n);
-        assert!(approx_equal(res, -2.0, 1e-6));
+        assert!(approx_equal(*res, -2.0, 1e-6));
     }
 
     #[test]
     fn compute_error_works() {
-        assert!(approx_equal(compute_error(5.0, 3.5), 1.5, 1e-6));
+        assert!(approx_equal(
+            *compute_error(InputSample(5.0), NoiseEstimate(3.5)),
+            1.5,
+            1e-6
+        ));
     }
 
     #[test]
