@@ -1,14 +1,10 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub mod algorithms;
+pub mod errors;
+pub mod filters;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod types;
+// TODO: decide how and which types to publically export
+pub use types::OutputSample;
+pub use types::SampleBuffer; // has to be exported because it's used by the Algorithm trait, which is also public // has to be exported because it's used by the Algorithm trait, which is also public
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+mod test_utils;

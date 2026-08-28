@@ -13,6 +13,11 @@
 !rust/src/
 !rust/src/**/
 !rust/src/**/*.rs
+
+!rust/examples/
+!rust/examples/**/
+!rust/examples/**/*.rs
+
 !rust/Cargo.toml
 !rust/Cargo.lock
 

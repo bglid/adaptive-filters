@@ -5,8 +5,6 @@ repos:
     rev: v2.5.0
     hooks:
       - id: check-yaml
-      - id: end-of-file-fixer
-        exclude: LICENSE
 
   # Python
   - repo: local
@@ -54,7 +52,7 @@ repos:
       
       - id: clippy
         name: clippy 
-        entry: bash -c "cd rust && cargo clippy --all-targets --all-features"
+        entry: bash -c "cd rust && cargo clippy --all-targets --all-features -- -Dwarnings"
         types: [rust]
         language: system
         files: ^rust/
