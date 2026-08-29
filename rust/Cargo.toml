@@ -43,8 +43,8 @@ missing_docs_in_private_items = "allow"
 
 # Requires short functions to be explicitly inlined, because automatic inlining can't be done across crates w/o LTO. 
 # This may be worth considering for the pure Rust API, but for PyO3 it's irrelevant.
-# Since inlining is done at the call site, this only applies to public functions anyway
+# Since inlining is done at the call site, this only applies to public functions anyway.
 missing_inline_in_public_items = "allow" 
 
-# This one is supposed to skip test modules (#[cfg(test)]), but as of 1.98.0 it only works on nightly
+# This one is supposed to skip test modules (#[cfg(test)]), but as of 1.98.0 it only works on nightly.
 inline_modules = "allow"
