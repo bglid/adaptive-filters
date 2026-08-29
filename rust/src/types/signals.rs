@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use crate::error::{FilterError, FilterResult};
+use crate::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct InputSignal<'a>(&'a [f64]);
@@ -11,9 +11,9 @@ impl Deref for InputSignal<'_> {
     }
 }
 impl<'a> InputSignal<'a> {
-    pub fn new(input_signal: &'a [f64]) -> FilterResult<Self> {
+    pub fn new(input_signal: &'a [f64]) -> Result<Self> {
         if input_signal.is_empty() {
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         } else {
             Ok(InputSignal(input_signal))
         }
@@ -41,9 +41,9 @@ impl Deref for NoiseReference<'_> {
     }
 }
 impl<'a> NoiseReference<'a> {
-    pub fn new(noise_ref: &'a [f64]) -> FilterResult<Self> {
+    pub fn new(noise_ref: &'a [f64]) -> Result<Self> {
         if noise_ref.is_empty() {
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         } else {
             Ok(NoiseReference(noise_ref))
         }

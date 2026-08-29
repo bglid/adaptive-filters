@@ -1,7 +1,7 @@
 use std::num::{NonZero, NonZeroUsize};
 
 use crate::algorithms::Algorithm;
-use crate::error::{FilterError, FilterResult};
+use crate::error::{Error, Result};
 use crate::types::{
     FilterWeights, InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample,
     OutputSample, OutputSignal, SampleBuffer,
@@ -53,7 +53,7 @@ impl<A: Algorithm> FilterBase<A> {
     ///
     /// Returns an error if `input_signal` or `noise_ref` are empty,
     /// or if `input_signal.len() > noise_ref.len()`.
-    pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
+    pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> Result<Vec<f64>> {
         let input_signal = InputSignal::new(input_signal)?;
         let noise_ref = NoiseReference::new(noise_ref)?;
         check_signal_lengths(&input_signal, &noise_ref)?;
@@ -89,7 +89,7 @@ impl<A: Algorithm> FilterBase<A> {
     ///
     /// Returns an error if `input_signal` or `noise_ref` are empty,
     /// or if `input_signal.len() > noise_ref.len()`.
-    pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
+    pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> Result<Vec<f64>> {
         let input_signal = InputSignal::new(input_signal)?;
         let noise_ref = NoiseReference::new(noise_ref)?;
         check_signal_lengths(&input_signal, &noise_ref)?;
@@ -138,12 +138,9 @@ fn compute_error(input_sample: InputSample, noise_estimate: NoiseEstimate) -> Ou
     OutputSample(*input_sample - *noise_estimate)
 }
 
-fn check_signal_lengths(
-    input_signal: &InputSignal,
-    noise_ref: &NoiseReference,
-) -> FilterResult<()> {
+fn check_signal_lengths(input_signal: &InputSignal, noise_ref: &NoiseReference) -> Result<()> {
     if noise_ref.len() < input_signal.len() {
-        Err(FilterError::NoiseRefTooShort {
+        Err(Error::NoiseRefTooShort {
             input_len: input_signal.len(),
             noise_len: noise_ref.len(),
         })
@@ -262,33 +259,27 @@ mod tests {
         // THEN check that input length < noise length.
         assert!(matches!(
             filter.adapt(&input, &[]),
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         ));
 
         assert!(matches!(
             filter.adapt(&[], &noise),
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         ));
-        assert!(matches!(
-            filter.adapt(&[], &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
+        assert!(matches!(filter.adapt(&[], &[]), Err(Error::EmptyInputArr)));
 
         filter.filter(&input, &noise).unwrap();
 
         assert!(matches!(
             filter.filter(&input, &[]),
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         ));
 
         assert!(matches!(
             filter.filter(&[], &noise),
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         ));
-        assert!(matches!(
-            filter.filter(&[], &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
+        assert!(matches!(filter.filter(&[], &[]), Err(Error::EmptyInputArr)));
     }
 
     #[test]
@@ -300,7 +291,7 @@ mod tests {
 
         assert!(matches!(
             filter.adapt(&input, &noise),
-            Err(FilterError::NoiseRefTooShort {
+            Err(Error::NoiseRefTooShort {
                 input_len: 3,
                 noise_len: 2
             })
@@ -308,7 +299,7 @@ mod tests {
 
         assert!(matches!(
             filter.filter(&input, &noise),
-            Err(FilterError::NoiseRefTooShort {
+            Err(Error::NoiseRefTooShort {
                 input_len: 3,
                 noise_len: 2
             })
