@@ -1,3 +1,8 @@
+#![allow(
+    clippy::exhaustive_structs,
+    reason = "Simple wrappers for primitives, so adding fields is highly unlikely."
+)]
+
 use std::ops::Deref;
 
 use crate::errors::{FilterError, FilterResult};
@@ -11,6 +16,8 @@ impl Deref for InputSignal<'_> {
     }
 }
 impl<'a> InputSignal<'a> {
+    /// # Errors
+    /// Returns an error if `input_signal` is empty.
     pub fn new(input_signal: &'a [f64]) -> FilterResult<Self> {
         if input_signal.is_empty() {
             Err(FilterError::EmptyInputArr)
@@ -41,6 +48,8 @@ impl Deref for NoiseReference<'_> {
     }
 }
 impl<'a> NoiseReference<'a> {
+    /// # Errors
+    /// Returns an error if `noise_ref` is empty.
     pub fn new(noise_ref: &'a [f64]) -> FilterResult<Self> {
         if noise_ref.is_empty() {
             Err(FilterError::EmptyInputArr)
@@ -95,11 +104,29 @@ impl Deref for OutputSignal {
 }
 
 #[derive(Debug, Clone, Copy)]
-#[allow(clippy::exhaustive_structs, reason = "Simple wrapper")]
 pub struct OutputSample(pub f64);
 impl Deref for OutputSample {
     type Target = f64;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::errors::FilterError;
+    use crate::types::{InputSignal, NoiseReference};
+
+    #[test]
+    fn reject_empty_signals() {
+        assert!(matches!(
+            InputSignal::new(&[]),
+            Err(FilterError::EmptyInputArr)
+        ));
+
+        assert!(matches!(
+            NoiseReference::new(&[]),
+            Err(FilterError::EmptyInputArr)
+        ));
     }
 }

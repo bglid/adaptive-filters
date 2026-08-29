@@ -25,6 +25,7 @@ impl<A: Algorithm> FilterBase<A> {
     pub fn new(algorithm: A, window_size: usize) -> Option<Self> {
         let window_size = NonZero::new(window_size)?;
 
+        // TODO: newtypes for mean and std_dev
         let weights = FilterWeights::new(window_size, 0.0, 5e-5)?;
 
         Some(FilterBase {
@@ -41,6 +42,8 @@ impl<A: Algorithm> FilterBase<A> {
         self.window_size.into()
     }
 
+    // TODO: getter fn for weights + loading weights w/ setter (from_weights() or load_weights())
+
     /// Iteratively adapts the filter to the input signal and noise reference
     /// using the chosen algorithm, and returns the denoised signal.
     ///
@@ -51,17 +54,18 @@ impl<A: Algorithm> FilterBase<A> {
     ///
     /// # Errors
     ///
-    /// Returns an error if `input_signal` or `noise_ref` are empty,
-    /// or if `input_signal.len() > noise_ref.len()`.
-    pub fn adapt(&mut self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        let input_signal = InputSignal::new(input_signal)?;
-        let noise_ref = NoiseReference::new(noise_ref)?;
-        check_signal_lengths(&input_signal, &noise_ref)?;
+    /// Returns an error if `input_signal.len() > noise_ref.len()`.
+    pub fn adapt(
+        &mut self,
+        input_signal: &InputSignal,
+        noise_ref: &NoiseReference,
+    ) -> FilterResult<Vec<f64>> {
+        check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
 
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
-        let mut cleaned_signal = OutputSignal::new(&input_signal);
+        let mut cleaned_signal = OutputSignal::new(input_signal);
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths() (putting in comment so fmt doesn't split lines)
@@ -87,17 +91,18 @@ impl<A: Algorithm> FilterBase<A> {
     ///
     /// # Errors
     ///
-    /// Returns an error if `input_signal` or `noise_ref` are empty,
-    /// or if `input_signal.len() > noise_ref.len()`.
-    pub fn filter(&self, input_signal: &[f64], noise_ref: &[f64]) -> FilterResult<Vec<f64>> {
-        let input_signal = InputSignal::new(input_signal)?;
-        let noise_ref = NoiseReference::new(noise_ref)?;
-        check_signal_lengths(&input_signal, &noise_ref)?;
+    /// Returns an error if `input_signal.len() > noise_ref.len()`.
+    pub fn filter(
+        &self,
+        input_signal: &InputSignal,
+        noise_ref: &NoiseReference,
+    ) -> FilterResult<Vec<f64>> {
+        check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
 
         let mut noise_ref_buffer = SampleBuffer::new(&self.weights);
-        let mut cleaned_signal = OutputSignal::new(&input_signal);
+        let mut cleaned_signal = OutputSignal::new(input_signal);
 
         for n in 0..n_samples {
             // We set n_samples = input_signal.len() and called check_signal_lengths()
@@ -161,7 +166,12 @@ mod tests {
 
     struct TestAlgorithm;
     impl Algorithm for TestAlgorithm {
-        fn update_step(&self, weights: &mut [f64], error: OutputSample, noise_ref: &SampleBuffer) {
+        fn update_step(
+            &self,
+            weights: &mut FilterWeights,
+            error: OutputSample,
+            noise_ref: &SampleBuffer,
+        ) {
             for (i, w) in weights.iter_mut().enumerate() {
                 *w += (*error) * noise_ref.get(i).unwrap();
             }
@@ -204,8 +214,8 @@ mod tests {
 
         let weights_before = filter.weights.clone();
 
-        let input = [5.0, 3.5, 2.6, -8.4];
-        let noise = [3.0, 2.8, -1.7, 2.24];
+        let input = InputSignal::new(&[5.0, 3.5, 2.6, -8.4]).unwrap();
+        let noise = NoiseReference::new(&[3.0, 2.8, -1.7, 2.24]).unwrap();
 
         filter.adapt(&input, &noise).unwrap();
 
@@ -221,8 +231,8 @@ mod tests {
 
         let weights_before = filter.weights.clone();
 
-        let input = [5.0, 3.5, 2.6, -8.4];
-        let noise = [3.0, 2.8, -1.7, 2.24];
+        let input = InputSignal::new(&[5.0, 3.5, 2.6, -8.4]).unwrap();
+        let noise = NoiseReference::new(&[3.0, 2.8, -1.7, 2.24]).unwrap();
 
         filter.filter(&input, &noise).unwrap();
 
@@ -238,8 +248,8 @@ mod tests {
 
         let before = filter.weights.len();
 
-        let input = [1.0, 2.0, 3.0];
-        let noise = [4.0, 5.0, 6.0];
+        let input = InputSignal::new(&[1.0, 2.0, 3.0]).unwrap();
+        let noise = NoiseReference::new(&[4.0, 5.0, 6.0]).unwrap();
 
         filter.adapt(&input, &noise).unwrap();
         let after = filter.weights.len();
@@ -248,55 +258,11 @@ mod tests {
     }
 
     #[test]
-    fn reject_empty_input() {
-        let mut filter = testing_filter();
-
-        let input = [1.0, 2.0, 3.0];
-        let noise = [4.0, 5.0, 6.0];
-
-        filter.adapt(&input, &noise).unwrap();
-
-        // This should return EmptyInputArr, not NoiseRefTooShort,
-        // because otherwise it might suggest that a noise ref of length 0 is valid.
-        // Therefore, the code should check first that the signals aren't empty
-        // THEN check that input length < noise length.
-        assert!(matches!(
-            filter.adapt(&input, &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
-
-        assert!(matches!(
-            filter.adapt(&[], &noise),
-            Err(FilterError::EmptyInputArr)
-        ));
-        assert!(matches!(
-            filter.adapt(&[], &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
-
-        filter.filter(&input, &noise).unwrap();
-
-        assert!(matches!(
-            filter.filter(&input, &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
-
-        assert!(matches!(
-            filter.filter(&[], &noise),
-            Err(FilterError::EmptyInputArr)
-        ));
-        assert!(matches!(
-            filter.filter(&[], &[]),
-            Err(FilterError::EmptyInputArr)
-        ));
-    }
-
-    #[test]
     fn reject_shorter_noise_ref() {
         let mut filter = testing_filter();
 
-        let input = [1.0, 2.0, 3.0];
-        let noise = [4.0, 5.0];
+        let input = InputSignal::new(&[1.0, 2.0, 3.0]).unwrap();
+        let noise = NoiseReference::new(&[4.0, 5.0]).unwrap();
 
         assert!(matches!(
             filter.adapt(&input, &noise),
@@ -319,8 +285,8 @@ mod tests {
     fn allow_longer_noise_ref() {
         let mut filter = testing_filter();
 
-        let input = [1.0, 2.0];
-        let noise = [4.0, 5.0, 6.0];
+        let input = InputSignal::new(&[1.0, 2.0]).unwrap();
+        let noise = NoiseReference::new(&[4.0, 5.0, 6.0]).unwrap();
 
         filter.adapt(&input, &noise).unwrap();
         filter.filter(&input, &noise).unwrap();

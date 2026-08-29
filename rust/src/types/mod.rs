@@ -5,7 +5,4 @@ mod sample_buffer;
 pub use sample_buffer::SampleBuffer;
 
 mod signals;
-pub use signals::{
-    InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample, OutputSample,
-    OutputSignal,
-};
+pub use signals::*;
