@@ -1,6 +1,9 @@
+# [build-system]
+# requires = ['hatchling', 'hatch-fancy-pypi-readme>=22.5.0']
+# build-backend = 'hatchling.build'
 [build-system]
-requires = ['hatchling', 'hatch-fancy-pypi-readme>=22.5.0']
-build-backend = 'hatchling.build'
+requires = ["maturin>=1.15,<2.0"]
+build-backend = "maturin"
 
 [project]
 name = "adaptive_filter"
@@ -18,14 +21,17 @@ dependencies = [
     "numpy>=1.21.0,<2.0.0",
 ]
 classifiers = [  
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Developers",
-  "Operating System :: OS Independent",
-  "Topic :: Software Development :: Libraries :: Python Modules",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 [project.urls]
