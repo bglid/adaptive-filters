@@ -1,6 +1,22 @@
-name: build
+name: Python CI
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "adaptive_filter/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "safety-policy.yml" # for now, this may change
+      - ".github/workflows/python-ci.yml"
+  pull_request:
+    paths:
+      - "adaptive_filter/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "safety-policy.yml" # for now, this may change
+      - ".github/workflows/python-ci.yml"
 
 jobs:
   build:
@@ -14,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v8.3.2
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
@@ -22,16 +38,13 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --dev
 
-      - name: Check lockfile
-        run: uv lock --check
-
       - name: Run style checks
         run: |
           uv run ruff check .
           uv run ruff format --check .
 
-      # - name: Run type checks
-      #   run: uv run mypy --config-file pyproject.toml .
+      - name: Run type checks
+        run: uv run ty check
 
       - name: Run tests
         run: |
