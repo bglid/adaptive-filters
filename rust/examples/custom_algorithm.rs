@@ -2,7 +2,9 @@
 
 use adaptive_filters::algorithms::Algorithm;
 use adaptive_filters::filters::FilterBase;
-use adaptive_filters::{OutputSample, SampleBuffer};
+use adaptive_filters::types::{
+    FilterWeights, InputSignal, NoiseReference, OutputSample, SampleBuffer,
+};
 
 // Create a struct to hold any required parameters or state
 pub struct MyAlgorithm {
@@ -11,7 +13,12 @@ pub struct MyAlgorithm {
 // Implement the Algorithm trait so the algorithm can be used with FilterBase
 impl Algorithm for MyAlgorithm {
     // This function is called every iteration during adaptation to update the weights
-    fn update_step(&self, weights: &mut [f64], error: OutputSample, noise_ref: &SampleBuffer) {
+    fn update_step(
+        &self,
+        weights: &mut FilterWeights,
+        error: OutputSample,
+        noise_ref: &SampleBuffer,
+    ) {
         for (w, x) in weights.iter_mut().zip(noise_ref.iter()) {
             *w += self.alpha * (*error) * x;
         }
@@ -20,8 +27,8 @@ impl Algorithm for MyAlgorithm {
 
 fn main() {
     // Sample inputs
-    let input_signal = [1.0, -2.5, 3.0];
-    let noise_ref = [2.0, -1.2, -3.8];
+    let input_signal = InputSignal::new(&[1.0, -2.5, 3.0]).unwrap();
+    let noise_ref = NoiseReference::new(&[2.0, -1.2, -3.8]).unwrap();
 
     // Define the algorithm parameters
     let algorithm_cfg = MyAlgorithm { alpha: 1.0 };

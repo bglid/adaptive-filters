@@ -1,3 +1,8 @@
+#![allow(
+    clippy::exhaustive_structs,
+    reason = "Simple wrappers for primitives, so adding fields is highly unlikely."
+)]
+
 use std::ops::Deref;
 
 use crate::error::{Error, Result};
@@ -95,11 +100,29 @@ impl Deref for OutputSignal {
 }
 
 #[derive(Debug, Clone, Copy)]
-#[allow(clippy::exhaustive_structs, reason = "Simple wrapper")]
 pub struct OutputSample(pub f64);
 impl Deref for OutputSample {
     type Target = f64;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::errors::FilterError;
+    use crate::types::{InputSignal, NoiseReference};
+
+    #[test]
+    fn reject_empty_signals() {
+        assert!(matches!(
+            InputSignal::new(&[]),
+            Err(FilterError::EmptyInputArr)
+        ));
+
+        assert!(matches!(
+            NoiseReference::new(&[]),
+            Err(FilterError::EmptyInputArr)
+        ));
     }
 }

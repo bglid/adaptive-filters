@@ -2,11 +2,12 @@
 
 use adaptive_filters::algorithms::LeastMeanSquares;
 use adaptive_filters::filters::LMSFilter;
+use adaptive_filters::types::{InputSignal, NoiseReference};
 
 fn main() {
     // Sample inputs
-    let input_signal = [1.0, -2.5, 3.0];
-    let noise_ref = [2.0, -1.2, -3.8];
+    let input_signal = InputSignal::new(&[1.0, -2.5, 3.0]).unwrap();
+    let noise_ref = NoiseReference::new(&[2.0, -1.2, -3.8]).unwrap();
 
     // The parameters used by the LMS filter
     let lms_config = LeastMeanSquares { mu: 1.0 };
