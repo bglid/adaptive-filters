@@ -59,7 +59,7 @@ impl<A: Algorithm> FilterBase<A> {
         &mut self,
         input_signal: &InputSignal,
         noise_ref: &NoiseReference,
-    ) -> FilterResult<Vec<f64>> {
+    ) -> Result<Vec<f64>> {
         check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
@@ -96,7 +96,7 @@ impl<A: Algorithm> FilterBase<A> {
         &self,
         input_signal: &InputSignal,
         noise_ref: &NoiseReference,
-    ) -> FilterResult<Vec<f64>> {
+    ) -> Result<Vec<f64>> {
         check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
