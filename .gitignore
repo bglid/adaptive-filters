@@ -9,17 +9,17 @@
 !tests/**/
 !tests/**/*.py
 
-!rust/
-!rust/src/
-!rust/src/**/
-!rust/src/**/*.rs
+!
+!src/
+!src/**/
+!src/**/*.rs
 
-!rust/examples/
-!rust/examples/**/
-!rust/examples/**/*.rs
+!examples/
+!examples/**/
+!examples/**/*.rs
 
-!rust/Cargo.toml
-!rust/Cargo.lock
+!Cargo.toml
+!Cargo.lock
 
 # uv
 !pyproject.toml

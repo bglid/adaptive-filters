@@ -36,24 +36,21 @@ repos:
     hooks:
       - id: cargo-fmt
         name: cargo fmt
-        entry: bash -c "cd rust && cargo fmt --all"
+        entry: cargo fmt --all
         types: [rust]
         language: system
-        files: ^rust/
         pass_filenames: false
 
       - id: cargo-check
         name: cargo check
-        entry: bash -c "cd rust && cargo check"
+        entry: cargo check
         types: [rust]
         language: system
-        files: ^rust/
         pass_filenames: false
       
       - id: clippy
         name: clippy 
-        entry: bash -c "cd rust && cargo clippy --all-targets --all-features -- -Dwarnings"
+        entry: cargo clippy --all-targets --all-features -- -Dwarnings
         types: [rust]
         language: system
-        files: ^rust/
         pass_filenames: false
