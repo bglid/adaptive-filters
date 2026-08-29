@@ -1,11 +1,12 @@
-use std::error::Error;
+use std::error;
 use std::fmt::Display;
+use std::result;
 
-pub type FilterResult<T> = Result<T, FilterError>;
+pub type Result<T> = result::Result<T, Error>;
 
 #[derive(Debug)]
 #[non_exhaustive]
-pub enum FilterError {
+pub enum Error {
     EmptyInputArr,
     NoiseRefTooShort {
         input_len: usize,
@@ -16,7 +17,7 @@ pub enum FilterError {
         buffer_len: usize,
     },
 }
-impl Display for FilterError {
+impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
             Self::EmptyInputArr => write!(f, "empty input array."),
@@ -37,4 +38,4 @@ impl Display for FilterError {
         }
     }
 }
-impl Error for FilterError {}
+impl error::Error for Error {}
