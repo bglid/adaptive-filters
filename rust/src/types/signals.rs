@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use crate::errors::{FilterError, FilterResult};
+use crate::error::{FilterError, FilterResult};
 
 #[derive(Debug, Clone)]
 pub struct InputSignal<'a>(&'a [f64]);

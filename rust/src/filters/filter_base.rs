@@ -1,7 +1,7 @@
 use std::num::{NonZero, NonZeroUsize};
 
 use crate::algorithms::Algorithm;
-use crate::errors::{FilterError, FilterResult};
+use crate::error::{FilterError, FilterResult};
 use crate::types::{
     FilterWeights, InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample,
     OutputSample, OutputSignal, SampleBuffer,
