@@ -46,7 +46,9 @@ class FrequencyDomainAF:
         return d_n - noise_estimate
 
     # Setting the update step to include conj
-    def update_step(self, e_n: NDArray[Any], x_n: NDArray[Any]) -> NDArray[Any]:
+    def update_step(
+        self, e_n: NDArray[np.complex128], x_n: NDArray[np.complex128]
+    ) -> NDArray[Any]:
         """Update for FDAF.
 
         Args:
