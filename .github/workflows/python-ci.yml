@@ -7,7 +7,6 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "uv.lock"
-      - "safety-policy.yml" # for now, this may change
       - ".github/workflows/python-ci.yml"
   pull_request:
     paths:
@@ -15,7 +14,6 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "uv.lock"
-      - "safety-policy.yml" # for now, this may change
       - ".github/workflows/python-ci.yml"
 
 jobs:
@@ -55,7 +53,7 @@ jobs:
 
       - name: Run safety checks
         run: |
-          uv run safety check --full-report --policy-file=safety-policy.yml
+          uv run safety check --full-report
           uv run bandit -ll --recursive adaptive_filter tests
 
       - name: Build package

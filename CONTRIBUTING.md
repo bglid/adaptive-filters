@@ -53,7 +53,7 @@ uv run ty check
 To run the security checks:
 
 ```bash
-uv run safety check --full-report --policy-file=safety-policy.yml
+uv run safety check --full-report
 uv run bandit -ll --recursive adaptive_filter tests
 ```
 
