@@ -1,9 +1,7 @@
-from typing import Any
-
 import numpy as np
 from numpy.typing import NDArray
 
-from adaptive_filter.filter_models.block_filter_model import FrequencyDomainAF
+from adaptive_filter.filter_models.fd_filter_model import FrequencyDomainAF
 
 
 class FDLMS(FrequencyDomainAF):
@@ -15,15 +13,15 @@ class FDLMS(FrequencyDomainAF):
 
     # updating the update step for LMS algorithm
     def update_step(
-        self, e_f: NDArray[np.complex128], x_f: NDArray[np.complex128]
-    ) -> NDArray[Any]:
+        self, e_n: NDArray[np.complex128], x_n: NDArray[np.complex128]
+    ) -> NDArray[np.float64]:
         """Update for FDAF: FD LMS algorithm.
 
         Args:
-            e_f (NDArray[np.complex128]): Block error in the frequency domain.
-            x_f (NDArray[np.complex128]): Block noise estimate in the frequency domain.
+            e_n (NDArray[np.complex128]): Block error in the frequency domain.
+            x_n (NDArray[np.complex128]): Block noise estimate in the frequency domain.
 
         Returns:
             NDArray[np.float64]: The weight update vector for FDAF.
         """
-        return self.mu * np.conj(x_f) * e_f
+        return self.mu * np.conj(x_n) * e_n
