@@ -1,5 +1,3 @@
-from typing import Any
-
 import numpy as np
 from numpy.typing import NDArray
 
@@ -48,7 +46,7 @@ class FrequencyDomainAF:
     # Setting the update step to include conj
     def update_step(
         self, e_n: NDArray[np.complex128], x_n: NDArray[np.complex128]
-    ) -> NDArray[Any]:
+    ) -> NDArray[np.complex128]:
         """Update for FDAF.
 
         Args:
@@ -56,7 +54,7 @@ class FrequencyDomainAF:
             x_n (NDArray[np.complex128]): Block noise estimate in the frequency domain.
 
         Returns:
-            NDArray[np.float64]: The weight update vector for FDAF.
+            NDArray[np.complex128]: The frequency domain weight update vec.
         """
         return self.mu * np.multiply(np.conj(x_n), e_n)
 

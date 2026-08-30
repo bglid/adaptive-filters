@@ -14,7 +14,7 @@ class FDLMS(FrequencyDomainAF):
     # updating the update step for LMS algorithm
     def update_step(
         self, e_n: NDArray[np.complex128], x_n: NDArray[np.complex128]
-    ) -> NDArray[np.float64]:
+    ) -> NDArray[np.complex128]:
         """Update for FDAF: FD LMS algorithm.
 
         Args:
@@ -22,6 +22,6 @@ class FDLMS(FrequencyDomainAF):
             x_n (NDArray[np.complex128]): Block noise estimate in the frequency domain.
 
         Returns:
-            NDArray[np.float64]: The weight update vector for FDAF.
+            NDArray[np.complex128]: The frequency domain weight update vec.
         """
-        return self.mu * np.conj(x_n) * e_n
+        return self.mu * np.multiply(np.conj(x_n), e_n)
