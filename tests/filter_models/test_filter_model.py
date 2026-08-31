@@ -4,7 +4,6 @@ import pytest
 from adaptive_filter.filter_models.filter_model import FilterModel
 
 
-# creating a sample pytest model
 @pytest.fixture
 def sample_model():
     # creating a sample model
@@ -14,20 +13,17 @@ def sample_model():
     return filter_model
 
 
-# testing noise estimate function
 def test_noise_estimate(sample_model):
     x_n = np.array([2.0, 3.0, 4.0])
     assert sample_model.noise_estimate(x_n) == pytest.approx(-2.0)
 
 
-# testing the error function
 def test_error(sample_model):
     d_n = 5.0
     noise_estimate = 3.5
     assert sample_model.error(d_n, noise_estimate) == pytest.approx(1.5)
 
 
-# testing the update step
 def test_update_step(sample_model):
     e_n = 5.0
     x_n = np.array([2.0, 3.0, 4.0])
@@ -37,27 +33,25 @@ def test_update_step(sample_model):
     assert np.all(output == 0.0)
 
 
-# testing the filter function
-def test_filter():
-    model = FilterModel(mu=0.1, filter_order=1)
-    # overriding update step
-    model.update_step = lambda e_n, x_n: np.array([0.0])
+def test_filter_returns_array(monkeypatch: pytest.MonkeyPatch):
+    model = FilterModel(
+        mu=0.1,
+        filter_order=1,
+    )
 
-    d = np.linspace(1, 5, 6)
+    # basically this replaces update_step with a lambda that returns
+    # -> an array of 0.0, to test that filter() returns the array correctly.
+    # Doesn't update algo, checks ndarray and shape
+    monkeypatch.setattr(
+        model,
+        "update_step",
+        lambda e_n, x_n: np.array([0.0], dtype=np.float64),
+    )
+
+    d = np.linspace(1, 5, 5)
     x = np.linspace(0.5, 2.5, 5)
-    clean = np.linspace(1, 5, 8)
-    if d.shape[0] < x.shape[0]:
-        x = x[: d.shape[0]]
-    if x.shape[0] < d.shape[0]:
-        d = d[: x.shape[0]]
-    if d.shape[0] < clean.shape[0]:
-        clean = clean[: d.shape[0]]
-    if clean.shape[0] < d.shape[0]:
-        d = d[: clean.shape[0]]
-        x = x[: clean.shape[0]]
-    # checking the signal shapes
-    assert d.shape == x.shape
-    assert d.shape == clean.shape
 
-    results = model.filter(d, x)
-    assert isinstance(results, np.ndarray)
+    result = model.filter(d, x)
+
+    assert isinstance(result, np.ndarray)
+    assert result.shape == d.shape

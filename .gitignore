@@ -24,10 +24,6 @@
 !.github/**/*.yml
 !.github/**/*.md
 !.pre-commit-config.yaml
-!safety-policy.yml
-
-# static analysis / linting
-!pyrightconfig.json
 
 # explitic excludes
 **/__pycache__/
