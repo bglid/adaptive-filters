@@ -125,8 +125,6 @@ class BlockFilterModel:
             x_buffer.append(circ_buffer.copy())
             error_buffer.append(error[sample])
 
-            # APA update
-            # Note from present day - wow there is such a better way to do this lmao
             if len(x_buffer) == (self.block_size):
                 x_block = np.stack(x_buffer, axis=1)
                 e_block = np.array(error_buffer)

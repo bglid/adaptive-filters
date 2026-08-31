@@ -10,7 +10,7 @@
 
 ---
 
-*Project is still WIP. Going through massive refactor to Rust [pyo3](https://github.com/pyo3/pyo3) internals*
+_Project is still WIP. Going through massive refactor to Rust [pyo3](https://github.com/pyo3/pyo3) internals_
 
 ---
 
@@ -18,13 +18,13 @@
 
 This project contains Python implementations of Adaptive filtering algorithms, currently including:
 
-| Adaptive Filter Algorithm            |     Status     |
-| ------------------------------------ | :-------------: |
+| Adaptive Filter Algorithm            |    Status     |
+| ------------------------------------ | :-----------: |
 | Least Mean Squares (LMS)             |       ✔       |
 | Normalized Least Mean Squares (NLMS) |       ✔       |
 | Recursive Least Squares (RLS)        |       ✔       |
 | Affine Projection Algorithm (APA)    |       ✔       |
-| Frequency Domain Adaptive Filters    | *in progress* |
+| Frequency Domain Adaptive Filters    | _in progress_ |
 
 > [!NOTE]
 > The frequency-domain implementations are still experimental and currently require further work before being appropriate for practical use.
@@ -92,7 +92,7 @@ Here:
 
 ## Credits
 
-Organization and project originally inspired by [``Padasip``](https://github.com/matousc89/padasip)
+Organization and project originally inspired by [`Padasip`](https://github.com/matousc89/padasip)
 
 ## Citation
 
@@ -100,7 +100,7 @@ If you found any of this helpful, feel free to cite it, or just send us an email
 
 ```bibtex
 @misc{adaptive_filter,
-  author = {bglid, enaske},
+  authors = {Benjamin Glidden, Elias Naske},
   title = {Python implementation of DSP adaptive filters},
   year = {2026},
   publisher = {GitHub},

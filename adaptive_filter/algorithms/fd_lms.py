@@ -24,4 +24,4 @@ class FDLMS(FrequencyDomainAF):
         Returns:
             NDArray[np.complex128]: The frequency domain weight update vec.
         """
-        return self.mu * np.multiply(np.conj(x_n), e_n)
+        return self.mu * np.conj(x_n) * e_n
