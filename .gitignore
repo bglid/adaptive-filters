@@ -5,11 +5,14 @@
 !adaptive_filter/**/
 !adaptive_filter/**/*.py
 
+!adaptive_filters/
+!adaptive_filters/*.py
+!adaptive_filters/*.pyi
+
 !tests/
 !tests/**/
 !tests/**/*.py
 
-!
 !src/
 !src/**/
 !src/**/*.rs

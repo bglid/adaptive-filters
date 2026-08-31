@@ -21,3 +21,9 @@ impl LMSFilter {
         self.0.window_size()
     }
 }
+
+#[pymodule]
+mod adaptive_filters {
+    #[pymodule_export]
+    use super::LMSFilter;
+}

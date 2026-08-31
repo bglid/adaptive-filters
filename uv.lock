@@ -13,7 +13,6 @@ name = "adaptive-filter"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
-    { name = "maturin" },
     { name = "numpy" },
 ]
 
@@ -23,6 +22,7 @@ dev = [
     { name = "black" },
     { name = "darglint" },
     { name = "isort", extra = ["colors"] },
+    { name = "maturin" },
     { name = "mypy" },
     { name = "mypy-extensions" },
     { name = "pre-commit" },
@@ -35,10 +35,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "maturin", specifier = ">=1.15.0" },
-    { name = "numpy", specifier = ">=1.21.0,<2.0.0" },
-]
+requires-dist = [{ name = "numpy", specifier = ">=1.21.0,<2.0.0" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -46,6 +43,7 @@ dev = [
     { name = "black", specifier = ">=26.3.1" },
     { name = "darglint", specifier = ">=1.8.1,<2.0.0" },
     { name = "isort", extras = ["colors"], specifier = ">=5.10.1,<6.0.0" },
+    { name = "maturin", specifier = ">=1.15.0" },
     { name = "mypy", specifier = ">=1.14.0" },
     { name = "mypy-extensions", specifier = ">=1.0.0,<2.0.0" },
     { name = "pre-commit", specifier = ">=4.0.1,<5.0.0" },
