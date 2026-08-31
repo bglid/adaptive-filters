@@ -19,6 +19,12 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "bandit" },
+    { name = "black" },
+    { name = "darglint" },
+    { name = "isort", extra = ["colors"] },
+    { name = "maturin" },
+    { name = "mypy" },
+    { name = "mypy-extensions" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -33,6 +39,12 @@ requires-dist = [{ name = "numpy", specifier = ">=1.21.0,<2.0.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "bandit", specifier = ">=1.7.1,<2.0.0" },
+    { name = "black", specifier = ">=26.3.1" },
+    { name = "darglint", specifier = ">=1.8.1,<2.0.0" },
+    { name = "isort", extras = ["colors"], specifier = ">=5.10.1,<6.0.0" },
+    { name = "maturin", specifier = ">=1.15.0" },
+    { name = "mypy", specifier = ">=1.14.0" },
+    { name = "mypy-extensions", specifier = ">=1.0.0,<2.0.0" },
     { name = "pre-commit", specifier = ">=4.0.1,<5.0.0" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=6.0.0,<7.0.0" },

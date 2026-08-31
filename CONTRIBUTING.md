@@ -27,6 +27,20 @@ uv run pre-commit install
 
 `uv` automatically manages the project virtual environment in `.venv`. Manually activating it is unnecessary. Run project tools with `uv run`.
 
+## Python bindings
+
+To build the Python bindings for the Rust code, use `maturin`:
+```bash
+uv run maturin develop
+```
+
+The build artifacts will be placed in `adaptive_filters/`
+
+### Adding new bindings
+
+New bindings should be imported in `adaptive_filters/__init__.py`.
+In order for `ty` to resolve imports correctly, you also have too add any new functions/classes to the stub file (`adaptive_filters/adaptive_filters.pyi`).
+
 ## Codestyle
 
 Format & lint the code with:

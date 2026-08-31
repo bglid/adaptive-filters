@@ -33,7 +33,7 @@ This project contains Python implementations of Adaptive filtering algorithms, c
 
 ## Installation
 
-The projects currently supports python 3.10 - 3.13. The project uses `uv` for dependency and environment management.
+The projects currently supports python 3.10 - 3.14. The project uses `uv` for dependency and environment management.
 
 Cloning the repo:
 
@@ -41,10 +41,10 @@ Cloning the repo:
 git clone https://github.com/bglid/adaptive-filters.git
 ```
 
-Install the project dev dependencies
-
+Install the project dev dependencies and build the Python bindings with `maturin`:
 ```bash
 uv sync
+uv run maturin develop
 ```
 
 You can then run commands in the project environment with this format:
