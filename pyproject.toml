@@ -53,7 +53,7 @@ exclude = [
 ]
 
 [tool.ruff.lint]
-extend-select = ["I", "B", "DOC"]
+extend-select = ["I", "B", "DOC", "RUF"]
 preview = true
 
 [tool.ruff.lint.pydocstyle]
