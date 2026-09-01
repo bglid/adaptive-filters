@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask a question about this project 🎓
+about: Ask a question about this project
 title: ''
 labels: question
 assignees:
@@ -9,7 +9,7 @@ assignees:
 
 <!-- Mark with an `x` all the checkboxes that apply (like `[x]`) -->
 
-- [ ] I've searched the project's [`issues`](https://github.com/bglid/adaptive_filter/issues?q=is%3Aissue).
+- [ ] I've searched the project's [`issues`](https://github.com/bglid/adaptive-filters/issues).
 
 ## Question
 

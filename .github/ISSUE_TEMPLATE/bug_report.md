@@ -28,6 +28,13 @@ Steps to reproduce the behavior:
 python --version
 ```
 
+* Rust & Cargo versions, get it with:
+
+```bash
+rustc --version
+cargo --version
+```
+
 ### Screenshots
 
 <!-- If applicable, add screenshots to help explain your problem. -->
