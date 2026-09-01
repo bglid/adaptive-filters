@@ -68,7 +68,8 @@ class FilterModel:
         """
 
         # initializing our weights given X
-        self.W = np.random.normal(0.0, 0.5, self.N)
+        rng = np.random.default_rng()
+        self.W = rng.normal(0.0, 0.5, self.N)
         self.W *= 0.001  # setting weights close to zero
 
         # turning D and X into np arrays, if not already

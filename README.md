@@ -33,7 +33,7 @@ This project contains Python implementations of Adaptive filtering algorithms, c
 
 ## Installation
 
-The projects currently supports python 3.10 - 3.13. The project uses `uv` for dependency and environment management.
+The projects currently supports python 3.10 - 3.14. The project uses `uv` for dependency and environment management.
 
 Cloning the repo:
 

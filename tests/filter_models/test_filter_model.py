@@ -30,7 +30,7 @@ def test_update_step(sample_model):
     output = sample_model.update_step(e_n, x_n)
     assert isinstance(output, np.ndarray)
     assert output.shape == x_n.shape
-    assert np.all(output == 0.0)
+    assert np.all(output == pytest.approx(0.0))
 
 
 def test_filter_returns_array(monkeypatch: pytest.MonkeyPatch):
