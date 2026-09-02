@@ -52,7 +52,7 @@ impl<'a> NoiseReference<'a> {
 }
 
 #[pymodule]
-mod adaptive_filters {
+mod adaptif {
     #[pymodule_export]
     use super::LMSFilter;
 }

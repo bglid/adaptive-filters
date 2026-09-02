@@ -1,4 +1,4 @@
-from adaptive_filters import LMSFilter
+from adaptif import LMSFilter
 
 
 def test_lms_filter():

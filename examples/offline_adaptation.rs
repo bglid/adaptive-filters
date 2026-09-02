@@ -1,8 +1,8 @@
 #![allow(clippy::unwrap_used, clippy::shadow_unrelated, reason = "Examples")]
 
-use adaptive_filters::algorithms::LeastMeanSquares;
-use adaptive_filters::filters::LMSFilter;
-use adaptive_filters::types::{InputSignal, NoiseReference};
+use adaptif::algorithms::LeastMeanSquares;
+use adaptif::filters::LMSFilter;
+use adaptif::types::{InputSignal, NoiseReference};
 
 fn main() {
     // Sample inputs

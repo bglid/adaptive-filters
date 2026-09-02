@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from adaptive_filters import LMSFilter
+from adaptif import LMSFilter
 
 
 @pytest.fixture
