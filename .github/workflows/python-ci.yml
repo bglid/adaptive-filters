@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --dev
 
+      - name: Generate Python bindings
+        run: uv run maturin develop
+
       - name: Run style checks
         run: |
           uv run ruff check .
