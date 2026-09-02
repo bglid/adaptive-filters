@@ -7,3 +7,4 @@ def test_lms_filter():
     assert hasattr(filter, "window_size")
     assert hasattr(filter, "adapt")
     assert hasattr(filter, "filter")
+    assert not hasattr(filter, "adapt_filter_impl")

@@ -7,4 +7,5 @@ pub mod types;
 #[cfg(feature = "python")]
 pub mod python;
 
+// TODO: only compile in dev
 mod test_utils;
