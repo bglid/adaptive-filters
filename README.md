@@ -1,4 +1,4 @@
-# Adaptive Filters
+# Adaptif
 
 [![Actions status](https://github.com/bglid/adaptive-filters/workflows/build/badge.svg)](https://github.com/bglid/adaptive-filters/actions)
 
@@ -69,18 +69,18 @@ In short,
 
 ## Usage
 
-Filters can be imported from the `adaptive_filter` package.
+Filters can be imported from the `adaptif` package.
 
-NLMS adaptive filter example:
+LMS adaptive filter example:
 
 ```python
-from adaptive_filter.algorithms.nlms import NLMS
+from adaptif import LMSFilter
 
 # setting up filter
-nlms_af = NLMS(mu=0.001, n=32)
+lms_af = LMSFilter(mu=0.001, n=32)
 
 # Assuming signals are already present and named accordingly
-cleaned_signal = nlms_af.filter(d=noisy_signal, x=noise)
+cleaned_signal = nlms_af.adapt(d=noisy_signal, x=noise)
 ```
 
 Here:
@@ -99,9 +99,9 @@ Organization and project originally inspired by [`Padasip`](https://github.com/m
 If you found any of this helpful, feel free to cite it, or just send us an email.
 
 ```bibtex
-@misc{adaptive_filter,
+@misc{adaptif,
   authors = {Benjamin Glidden, Elias Naske},
-  title = {Python implementation of DSP adaptive filters},
+  title = {Adaptif: Rust and Python implementation of DSP adaptive filters},
   year = {2026},
   publisher = {GitHub},
   journal = {GitHub repository},

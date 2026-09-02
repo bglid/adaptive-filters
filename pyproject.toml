@@ -3,7 +3,7 @@ requires = ["maturin>=1.15,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "adaptive_filter"
+name = "adaptif"
 version = "0.2.0"
 description = "Python implementation of DSP adaptive filters"
 readme = "README.md"
@@ -68,7 +68,7 @@ convention = "google"
 [tool.ty.src]
 include = [
     "adaptive_filter",
-    "adaptive_filters",
+    "adaptif",
     "tests",
 ]
 

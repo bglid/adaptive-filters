@@ -7,7 +7,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "adaptive-filter"
+name = "adaptif"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [

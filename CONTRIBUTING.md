@@ -34,12 +34,12 @@ To build the Python bindings for the Rust code, use `maturin`:
 uv run maturin develop
 ```
 
-The build artifacts will be placed in `adaptive_filters/`
+The build artifacts will be placed in `adaptif/`
 
 ### Adding new bindings
 
-New bindings should be imported in `adaptive_filters/__init__.py`.
-In order for `ty` to resolve imports correctly, you also have too add any new functions/classes to the stub file (`adaptive_filters/adaptive_filters.pyi`).
+New bindings should be imported in `adaptif/__init__.py`.
+In order for `ty` to resolve imports correctly, you also have too add any new functions/classes to the stub file (`adaptif/adaptif.pyi`).
 
 ## Codestyle
 
@@ -83,13 +83,13 @@ We maintain `.gitignore` as a whitelist by ignoring all files by default and imp
 
 ```bash
 # directory
-!adaptive_filter/
+!src/
 
 # all subdirectories
-!adaptive_filter/**/
+!src/**/
 
-# only python files
-!adaptive_filter/**/*.py
+# only Rust files
+!src/**/*.rs
 ```
 
 If you add new files to `.gitignore`, try to keep your additions reasonably concise by using wildcard like in the example above.

@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "adaptive-filters"
+name = "adaptif"
 version = "0.2.0"
 dependencies = [
  "numpy",
