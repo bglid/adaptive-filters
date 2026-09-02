@@ -8,14 +8,7 @@ pub type Result<T> = result::Result<T, Error>;
 #[non_exhaustive]
 pub enum Error {
     EmptyInputArr,
-    NoiseRefTooShort {
-        input_len: usize,
-        noise_len: usize,
-    },
-    WeightSizeMismatch {
-        weight_len: usize,
-        buffer_len: usize,
-    },
+    NoiseRefTooShort { input_len: usize, noise_len: usize },
 }
 impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -27,13 +20,6 @@ impl Display for Error {
             } => write!(
                 f,
                 "length of the noise reference ({noise_len}) must be equal to or greater than that of the input signal ({input_len})."
-            ),
-            Self::WeightSizeMismatch {
-                weight_len,
-                buffer_len,
-            } => write!(
-                f,
-                "number of weights ({weight_len}) and samples ({buffer_len}) don't match."
             ),
         }
     }

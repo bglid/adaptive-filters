@@ -10,7 +10,7 @@ from adaptive_filter.algorithms import lms
     [
         (0.5, 2.0, np.array([1.0, -1.0]), np.array([1.0, -1.0])),
         (1.0, 1.0, np.array([5.0, 2.0]), np.array([5.0, 2.0])),
-        (-1.0, 1.0, np.array([0.5, 0.25]), np.array([-0.5, -0.25])),
+        # (-1.0, 1.0, np.array([0.5, 0.25]), np.array([-0.5, -0.25])),  # mu cannot be negative!
     ],
 )
 def test_update_step(mu, e_n, x_n, expected_result):

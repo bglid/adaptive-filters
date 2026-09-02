@@ -1,43 +1,48 @@
 import numpy as np
 import pytest
 
-from adaptive_filter.filter_models.filter_model import FilterModel
+from adaptive_filter.filter_models.fd_filter_model import FrequencyDomainAF
 
 
+# creating a sample pytest model
 @pytest.fixture
 def sample_model():
     # creating a sample model
-    filter_model = FilterModel(mu=0.1, filter_order=3)
+    filter_model = FrequencyDomainAF(mu=0.1, filter_order=3, block_size=2)
     # setting the weights manually
     filter_model.W = np.array([1.0, -2.0, 0.5])
     return filter_model
 
 
+# testing noise estimate function
 def test_noise_estimate(sample_model):
     x_n = np.array([2.0, 3.0, 4.0])
     assert sample_model.noise_estimate(x_n) == pytest.approx(-2.0)
 
 
+# testing the error function
 def test_error(sample_model):
     d_n = 5.0
     noise_estimate = 3.5
     assert sample_model.error(d_n, noise_estimate) == pytest.approx(1.5)
 
 
+# testing the update step
 def test_update_step(sample_model):
-    e_n = 5.0
-    x_n = np.array([2.0, 3.0, 4.0])
+    e_n = np.array([5.0, 5.0, 5.0], dtype=np.complex128)
+    x_n = np.array([2.0, 3.0, 4.0], dtype=np.complex128)
+
+    # using is close for complex vals
+    expected = np.array([1.0, 1.5, 2.0], dtype=np.complex128)
+
     output = sample_model.update_step(e_n, x_n)
     assert isinstance(output, np.ndarray)
     assert output.shape == x_n.shape
-    assert np.all(output == pytest.approx(0.0))
+    assert np.allclose(output, expected)
 
 
 def test_filter_returns_array(monkeypatch: pytest.MonkeyPatch):
-    model = FilterModel(
-        mu=0.1,
-        filter_order=1,
-    )
+    model = FrequencyDomainAF(mu=0.1, filter_order=1, block_size=2)
 
     # basically this replaces update_step with a lambda that returns
     # -> an array of 0.0, to test that filter() returns the array correctly.
