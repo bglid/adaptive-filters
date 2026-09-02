@@ -17,7 +17,7 @@ use crate::types::{InputSignal, NoiseReference};
 impl Error {
     fn to_pyerr(&self) -> PyErr {
         match *self {
-            Self::EmptyInputArr | Self::NoiseRefTooShort { .. } => {
+            Self::EmptyInputArr | Self::NoiseRefTooShort { .. } | Self::NonPositiveStepSize => {
                 PyValueError::new_err(self.to_string())
             }
         }
@@ -63,7 +63,8 @@ pub struct LMSFilter(RustLMSFilter);
 impl LMSFilter {
     #[new]
     fn new(mu: f64, window_size: usize) -> PyResult<Self> {
-        match RustLMSFilter::new(LeastMeanSquares { mu }, window_size) {
+        let lms = LeastMeanSquares::new(mu).map_err(|e| e.to_pyerr())?;
+        match RustLMSFilter::new(lms, window_size) {
             Some(filter) => Ok(Self(filter)),
             None => Err(PyValueError::new_err("window_size cannot be zero")),
         }
