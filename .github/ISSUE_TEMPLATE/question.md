@@ -5,11 +5,11 @@ title: ''
 labels: question
 assignees:
 ---
-## Checklist
+## Before submitting
 
 <!-- Mark with an `x` all the checkboxes that apply (like `[x]`) -->
 
-- [ ] I've searched the project's [`issues`](https://github.com/bglid/adaptive-filters/issues).
+Please confirm you've searched the project's [`issues`](https://github.com/bglid/adaptive-filters/issues).
 
 ## Question
 

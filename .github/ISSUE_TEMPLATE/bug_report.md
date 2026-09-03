@@ -34,6 +34,10 @@ python --version
 rustc --version
 cargo --version
 ```
+* Specify whether you're on Rust stable, nightly, or beta:
+```bash
+rustup show active-toolchain
+``` 
 
 ### Screenshots
 
