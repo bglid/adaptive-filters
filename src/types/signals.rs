@@ -51,7 +51,7 @@ impl Deref for NoiseReference<'_> {
 }
 impl<'a> NoiseReference<'a> {
     /// # Errors
-    /// Returns an error if `input_signal` is empty.
+    /// Returns an error if `noise_ref` is empty.
     pub fn new(noise_ref: &'a [f64]) -> Result<Self> {
         if noise_ref.is_empty() {
             Err(Error::EmptyInputArr)

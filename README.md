@@ -80,7 +80,7 @@ from adaptif import LMSFilter
 lms_af = LMSFilter(mu=0.001, n=32)
 
 # Assuming signals are already present and named accordingly
-cleaned_signal = nlms_af.adapt(d=noisy_signal, x=noise)
+cleaned_signal = lms_af.adapt(d=noisy_signal, x=noise)
 ```
 
 Here:
