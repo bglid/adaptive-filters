@@ -1,7 +1,7 @@
 use std::num::{NonZero, NonZeroUsize};
 
 use crate::algorithms::Algorithm;
-use crate::errors::{FilterError, FilterResult};
+use crate::error::{Error, Result};
 use crate::types::{
     FilterWeights, InputSample, InputSignal, NoiseEstimate, NoiseReference, NoiseSample,
     OutputSample, OutputSignal, SampleBuffer,
@@ -59,7 +59,7 @@ impl<A: Algorithm> FilterBase<A> {
         &mut self,
         input_signal: &InputSignal,
         noise_ref: &NoiseReference,
-    ) -> FilterResult<Vec<f64>> {
+    ) -> Result<Vec<f64>> {
         check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
@@ -96,7 +96,7 @@ impl<A: Algorithm> FilterBase<A> {
         &self,
         input_signal: &InputSignal,
         noise_ref: &NoiseReference,
-    ) -> FilterResult<Vec<f64>> {
+    ) -> Result<Vec<f64>> {
         check_signal_lengths(input_signal, noise_ref)?;
 
         let n_samples = input_signal.len();
@@ -143,12 +143,9 @@ fn compute_error(input_sample: InputSample, noise_estimate: NoiseEstimate) -> Ou
     OutputSample(*input_sample - *noise_estimate)
 }
 
-fn check_signal_lengths(
-    input_signal: &InputSignal,
-    noise_ref: &NoiseReference,
-) -> FilterResult<()> {
+fn check_signal_lengths(input_signal: &InputSignal, noise_ref: &NoiseReference) -> Result<()> {
     if noise_ref.len() < input_signal.len() {
-        Err(FilterError::NoiseRefTooShort {
+        Err(Error::NoiseRefTooShort {
             input_len: input_signal.len(),
             noise_len: noise_ref.len(),
         })
@@ -266,7 +263,7 @@ mod tests {
 
         assert!(matches!(
             filter.adapt(&input, &noise),
-            Err(FilterError::NoiseRefTooShort {
+            Err(Error::NoiseRefTooShort {
                 input_len: 3,
                 noise_len: 2
             })
@@ -274,7 +271,7 @@ mod tests {
 
         assert!(matches!(
             filter.filter(&input, &noise),
-            Err(FilterError::NoiseRefTooShort {
+            Err(Error::NoiseRefTooShort {
                 input_len: 3,
                 noise_len: 2
             })

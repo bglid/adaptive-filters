@@ -5,7 +5,9 @@
 
 use std::ops::Deref;
 
-use crate::errors::{FilterError, FilterResult};
+use crate::error::{Error, Result};
+
+// TODO: make InputSignal and NoiseReference own their inner values (&[f64] -> Vec<f64>, c.f. Vec::from())
 
 #[derive(Debug, Clone)]
 pub struct InputSignal<'a>(&'a [f64]);
@@ -18,9 +20,9 @@ impl Deref for InputSignal<'_> {
 impl<'a> InputSignal<'a> {
     /// # Errors
     /// Returns an error if `input_signal` is empty.
-    pub fn new(input_signal: &'a [f64]) -> FilterResult<Self> {
+    pub fn new(input_signal: &'a [f64]) -> Result<Self> {
         if input_signal.is_empty() {
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         } else {
             Ok(InputSignal(input_signal))
         }
@@ -50,9 +52,9 @@ impl Deref for NoiseReference<'_> {
 impl<'a> NoiseReference<'a> {
     /// # Errors
     /// Returns an error if `noise_ref` is empty.
-    pub fn new(noise_ref: &'a [f64]) -> FilterResult<Self> {
+    pub fn new(noise_ref: &'a [f64]) -> Result<Self> {
         if noise_ref.is_empty() {
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         } else {
             Ok(NoiseReference(noise_ref))
         }
@@ -114,19 +116,16 @@ impl Deref for OutputSample {
 
 #[cfg(test)]
 mod tests {
-    use crate::errors::FilterError;
+    use crate::error::Error;
     use crate::types::{InputSignal, NoiseReference};
 
     #[test]
     fn reject_empty_signals() {
-        assert!(matches!(
-            InputSignal::new(&[]),
-            Err(FilterError::EmptyInputArr)
-        ));
+        assert!(matches!(InputSignal::new(&[]), Err(Error::EmptyInputArr)));
 
         assert!(matches!(
             NoiseReference::new(&[]),
-            Err(FilterError::EmptyInputArr)
+            Err(Error::EmptyInputArr)
         ));
     }
 }

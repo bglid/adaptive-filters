@@ -5,21 +5,24 @@
 !adaptive_filter/**/
 !adaptive_filter/**/*.py
 
+!adaptif/
+!adaptif/*.py
+!adaptif/*.pyi
+
 !tests/
 !tests/**/
 !tests/**/*.py
 
-!rust/
-!rust/src/
-!rust/src/**/
-!rust/src/**/*.rs
+!src/
+!src/**/
+!src/**/*.rs
 
-!rust/examples/
-!rust/examples/**/
-!rust/examples/**/*.rs
+!examples/
+!examples/**/
+!examples/**/*.rs
 
-!rust/Cargo.toml
-!rust/Cargo.lock
+!Cargo.toml
+!Cargo.lock
 
 # uv
 !pyproject.toml
@@ -36,11 +39,6 @@
 !.github/**/*.yml
 !.github/**/*.md
 !.pre-commit-config.yaml
-!safety-policy.yml
-
-# static analysis / linting
-!pyrightconfig.json
-!setup.cfg
 
 # explitic excludes
 **/__pycache__/

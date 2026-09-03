@@ -1,0 +1,65 @@
+name: Python CI
+
+on:
+  push:
+    paths:
+      - "adaptive_filter/**"
+      - "adaptif/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/python-ci.yml"
+  pull_request:
+    paths:
+      - "adaptive_filter/**"
+      - "adaptif/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/python-ci.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Generate Python bindings
+        run: uv run maturin develop
+
+      - name: Run style checks
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: Run type checks
+        run: uv run ty check
+
+      - name: Run tests
+        run: |
+          uv run pytest \
+            --cov-report=term-missing \
+            --cov=adaptive_filter \
+            tests/
+
+      - name: Run safety checks
+        run: |
+          uv run safety check --full-report
+          uv run bandit -ll --recursive adaptive_filter tests
+
+      - name: Build package
+        run: uv build

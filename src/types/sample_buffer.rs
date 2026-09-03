@@ -28,7 +28,9 @@ impl SampleBuffer {
     }
 
     pub fn push(&mut self, sample: f64) {
-        if self.samples.len() == self.capacity.into() {
+        // have to bind this because pyo3 adds extra impl of PartialEq
+        let capacity: usize = self.capacity.into();
+        if self.samples.len() == capacity {
             self.samples.pop_front();
         }
         self.samples.push_back(sample);

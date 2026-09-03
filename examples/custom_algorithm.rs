@@ -1,10 +1,8 @@
 #![allow(clippy::unwrap_used, clippy::exhaustive_structs, reason = "Examples")]
 
-use adaptive_filters::algorithms::Algorithm;
-use adaptive_filters::filters::FilterBase;
-use adaptive_filters::types::{
-    FilterWeights, InputSignal, NoiseReference, OutputSample, SampleBuffer,
-};
+use adaptif::algorithms::Algorithm;
+use adaptif::filters::FilterBase;
+use adaptif::types::{FilterWeights, InputSignal, NoiseReference, OutputSample, SampleBuffer};
 
 // Create a struct to hold any required parameters or state
 pub struct MyAlgorithm {

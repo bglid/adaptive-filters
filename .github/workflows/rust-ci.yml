@@ -21,10 +21,6 @@ jobs:
       matrix:
         toolchain:
           - stable
-
-    defaults:
-      run:
-        working-directory: ./rust
     
     steps:
       - name: Checkout

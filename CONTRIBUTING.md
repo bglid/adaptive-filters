@@ -27,19 +27,27 @@ uv run pre-commit install
 
 `uv` automatically manages the project virtual environment in `.venv`. Manually activating it is unnecessary. Run project tools with `uv run`.
 
-## Codestyle
+## Python bindings
 
-Format the code with:
-
+To build the Python bindings for the Rust code, use `maturin`:
 ```bash
-uv run isort . 
-uv run black .
+uv run maturin develop
 ```
 
-Apply Python syntax upgrades with:
+The build artifacts will be placed in `adaptif/`
+
+### Adding new bindings
+
+New bindings should be imported in `adaptif/__init__.py`.
+In order for `ty` to resolve imports correctly, you also have too add any new functions/classes to the stub file (`adaptif/adaptif.pyi`).
+
+## Codestyle
+
+Format & lint the code with:
 
 ```bash
-uv run pyupgrade --py310-plus **/*.py
+uv run ruff check --fix .
+uv run ruff format .
 ```
 
 ### Checks
@@ -50,24 +58,16 @@ To run the test suite:
 uv run pytest
 ```
 
-To run the mypy type checking:
+To run the ty type checking:
 
 ```bash
-uv run mypy .
-```
-
-To run the style checking:
-
-```bash
-uv run isort --diff --check-only . 
-uv run black --diff --check . 
-uv run darglint --verbosity 2 adaptive_filter tests  # this'll run on the tests too
+uv run ty check
 ```
 
 To run the security checks:
 
 ```bash
-uv run safety check --full-report --policy-file=safety-policy.yml 
+uv run safety check --full-report
 uv run bandit -ll --recursive adaptive_filter tests
 ```
 
@@ -80,15 +80,16 @@ uv run pre-commit run --all-files
 ### File tracking
 
 We maintain `.gitignore` as a whitelist by ignoring all files by default and implicitly including only the files we actually need by prefixing them with `!`, e.g.:
+
 ```bash
 # directory
-!adaptive_filter/
+!src/
 
 # all subdirectories
-!adaptive_filter/**/
+!src/**/
 
-# only python files
-!adaptive_filter/**/*.py
+# only Rust files
+!src/**/*.rs
 ```
 
 If you add new files to `.gitignore`, try to keep your additions reasonably concise by using wildcard like in the example above.
@@ -101,22 +102,24 @@ Likewise, if you delete any files, make sure to remove any lines that are no lon
 Before submitting your code please do the following steps:
 
 1. Add tests for new changes
-     - *Update documentation for significant changes.*
+   - _Update documentation for significant changes._
 2. Update `.gitignore` to whitelist any files you created and remove any files you deleted.
-3. Format your changes with isort and black
-4. Run uv run pytest
-5. Run uv run mypy .
-6. Run uv run pre-commit run --all-files
-7. Commit any changes to uv.lock if you modified project dependencies
+3. Format your changes with `ruff`
+4. Run `uv run pytest`
+5. Run `uv run ty check`
+6. Run `uv run pre-commit run --all-files`
+7. Commit any changes to `uv.lock` if you modified project dependencies
 
 ## Other help
 
 You can contribute by spreading a word about this library.
 You can also share your best practices with us.
 
-- - - 
-**In particular**, if you use this in any DSP research, please let us know!! 
+---
+
+**In particular**, if you use this in any DSP research, please let us know!!
+
 1. Because we love the topic and would love to check out and share your research
 2. It gives us an opportunity to see how this library is being used and how it can be improved.
 
-- - - 
+---
