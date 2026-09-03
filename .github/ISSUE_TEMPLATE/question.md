@@ -7,8 +7,6 @@ assignees:
 ---
 ## Before submitting
 
-<!-- Mark with an `x` all the checkboxes that apply (like `[x]`) -->
-
 Please confirm you've searched the project's [`issues`](https://github.com/bglid/adaptive-filters/issues).
 
 ## Question
