@@ -1,13 +1,14 @@
 ---
 name: Question
 about: Ask a question about this project
-title: ''
+title: ""
 labels: question
 assignees:
 ---
+
 ## Before submitting
 
-Please confirm you've searched the project's [`issues`](https://github.com/bglid/adaptive-filters/issues).
+Please confirm you've searched the project's [`issues`](https://github.com/bglid/adaptif/issues).
 
 ## Question
 
