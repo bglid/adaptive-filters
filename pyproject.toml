@@ -3,7 +3,7 @@ requires = ['hatchling', 'hatch-fancy-pypi-readme>=22.5.0']
 build-backend = 'hatchling.build'
 
 [project]
-name = "adaptive_filter"
+name = "adaptif"
 version = "0.2.0"
 description = "Python implementation of DSP adaptive filters"
 readme = "README.md"
