@@ -99,13 +99,13 @@ Organization and project originally inspired by [`Padasip`](https://github.com/m
 If you found any of this helpful, feel free to cite it, or just send us an email.
 
 ```bibtex
-@misc{adaptive_filter,
+@misc{adaptif,
   authors = {Benjamin Glidden, Elias Naske},
   title = {Python implementation of DSP adaptive filters},
   year = {2026},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/bglid/adaptive_filter}}
+  howpublished = {\url{https://github.com/bglid/adaptif}}
 }
 ```
 
