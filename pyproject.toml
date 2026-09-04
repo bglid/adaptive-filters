@@ -29,8 +29,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bglid/adaptive-filters"
-Repository = "https://github.com/bglid/adaptive-filters"
+Homepage = "https://github.com/bglid/adaptif"
+Repository = "https://github.com/bglid/adaptif"
 
 
 [dependency-groups]
